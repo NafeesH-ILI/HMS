@@ -18,9 +18,18 @@ namespace hms.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IAsyncEnumerable<Doctor>> GetAll()
+        public ActionResult<IAsyncEnumerable<Doctor>> GetAll(int? after=0)
         {
-            return Ok(Ctx.Doctors.AsAsyncEnumerable());
+            int lastId = 0;
+            if (after != null)
+                lastId = after.Value;
+            Logger.LogInformation("lastId = " + lastId);
+            var res = Ctx.Doctors
+                .OrderBy(d => d.Id)
+                .Where(d => d.Id > lastId)
+                .Take(10)
+                .AsAsyncEnumerable();
+            return Ok(res);
         }
 
         [HttpGet("{id}", Name="GetDoctorById")]
@@ -42,7 +51,7 @@ namespace hms.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Doctor>> Post(DoctorDTOPost doctor)
+        public async Task<ActionResult<Doctor>> Post(DoctorDtoPost doctor)
         {
             Doctor d = new() {
                 Name = doctor.Name,
@@ -63,7 +72,7 @@ namespace hms.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, DoctorDTOPost doctor)
+        public async Task<ActionResult> Put(int id, DoctorDtoPost doctor)
         {
             if (await Ctx.Doctors.FindAsync(id) == null)
                 return NotFound();
@@ -87,7 +96,7 @@ namespace hms.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult> Patch(int id, DoctorDTOPut doctor)
+        public async Task<ActionResult> Patch(int id, DoctorDtoPut doctor)
         {
             Doctor? d = new() { Id = id };
             d = await Ctx.Doctors.FindAsync(id);
