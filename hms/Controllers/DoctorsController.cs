@@ -18,15 +18,24 @@ namespace hms.Controllers
         }
 
         [HttpGet]
-        public IAsyncEnumerable<Doctor> GetAll()
+        public ActionResult<IAsyncEnumerable<Doctor>> GetAll()
         {
-            return Ctx.Doctors.AsAsyncEnumerable();
+            return Ok(Ctx.Doctors.AsAsyncEnumerable());
         }
 
         [HttpGet("{id}", Name="GetDoctorById")]
         public async Task<ActionResult<Doctor>> Get(int id)
         {
-            Doctor? doctor = await Ctx.Doctors.FindAsync(id);
+            Doctor? doctor;
+            try
+            {
+                doctor = await Ctx.Doctors.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to Get doctor with id={0}", id);
+                return BadRequest();
+            }
             if (doctor == null)
                 return NotFound();
             return Ok(doctor);
@@ -40,8 +49,16 @@ namespace hms.Controllers
                 MaxQualification = doctor.MaxQualification,
                 Specialization = doctor.Specialization
             };
-            Ctx.Doctors.Add(d);
-            await Ctx.SaveChangesAsync();
+            try
+            {
+                Ctx.Doctors.Add(d);
+                await Ctx.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to Post doctor");
+                return BadRequest();
+            }
             return CreatedAtRoute("GetDoctorById", new { id = d.Id }, d);
         }
 
@@ -56,8 +73,16 @@ namespace hms.Controllers
                 MaxQualification = doctor.MaxQualification,
                 Specialization = doctor.Specialization
             };
-            Ctx.Doctors.Update(d);
-            await Ctx.SaveChangesAsync();
+            try
+            {
+                Ctx.Doctors.Update(d);
+                await Ctx.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to Put doctor");
+                return BadRequest();
+            }
             return Ok();
         }
 
@@ -74,8 +99,16 @@ namespace hms.Controllers
                 d.Specialization = doctor.Specialization;
             if (doctor.MaxQualification != null)
                 d.MaxQualification = doctor.MaxQualification;
-            Ctx.Doctors.Update(d);
-            await Ctx.SaveChangesAsync();
+            try
+            {
+                Ctx.Doctors.Update(d);
+                await Ctx.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Faield to Patch Doctor");
+                return BadRequest();
+            }
             return Ok();
         }
 
@@ -85,8 +118,16 @@ namespace hms.Controllers
             Doctor? d = await Ctx.Doctors.FindAsync(id);
             if (d == null)
                 return NotFound();
-            Ctx.Doctors.Remove(d);
-            await Ctx.SaveChangesAsync();
+            try
+            {
+                Ctx.Doctors.Remove(d);
+                await Ctx.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to Delete Doctor");
+                return BadRequest();
+            }
             return Ok();
         }
     }
