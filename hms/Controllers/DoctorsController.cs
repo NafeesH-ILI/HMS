@@ -35,9 +35,13 @@ namespace hms.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Doctor>> Post(Doctor_NoId doctor)
+        public async Task<ActionResult<Doctor>> Post(Doctor_New doctor)
         {
-            Doctor d = new() { Name = doctor.Name };
+            Doctor d = new() {
+                Name = doctor.Name,
+                MaxQualification = doctor.MaxQualification,
+                Specialization = doctor.Specialization
+            };
             try
             {
                 Ctx.Doctors.Add(d);
@@ -48,13 +52,18 @@ namespace hms.Controllers
                 Logger.LogError("Post Doctor: " + ex.Message);
                 return StatusCode(500);
             }
-            return CreatedAtRoute("GetDoctorById", new { id = d.Id }, doctor);
+            return CreatedAtRoute("GetDoctorById", new { id = d.Id }, d);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Doctor>> Put(int id, Doctor_NoId doctor)
+        public async Task<ActionResult<Doctor>> Put(int id, Doctor_New doctor)
         {
-            Doctor d = new() { Id = id, Name = doctor.Name };
+            Doctor d = new() {
+                Id = id,
+                Name = doctor.Name,
+                MaxQualification = doctor.MaxQualification,
+                Specialization = doctor.Specialization
+            };
             try
             {
                 Ctx.Doctors.Update(d);
@@ -72,7 +81,7 @@ namespace hms.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<Doctor>> Patch(int id, Doctor_NoId_Optional doctor)
+        public async Task<ActionResult<Doctor>> Patch(int id, Doctor_Optional doctor)
         {
             // TODO: implement this
             return StatusCode(500);

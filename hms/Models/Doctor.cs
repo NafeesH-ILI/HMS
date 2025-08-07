@@ -12,15 +12,24 @@ namespace hms.Models
 
         [Column("name")]
         public string? Name { get; set; }
+
+        [Column("max_qual")]
+        public string? MaxQualification { get; set; }
+
+        [Column("specialization")]
+        public string? Specialization { get; set; }
     }
 
-    public class Doctor_NoId
+    public class Doctor_New
     {
-        public string? Name { get; set; }
+        public required string Name { get; set; }
+        public required string MaxQualification { get; set; }
+        public required string Specialization { get; set; }
     }
-
-    public class Doctor_NoId_Optional
+    public class Doctor_Optional
     {
         public string? Name { get; set; }
+        public string? MaxQualification { get; set; }
+        public string? Specialization { get; set; }
     }
 }
