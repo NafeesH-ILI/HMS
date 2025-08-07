@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace hms.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("doctors")]
     public class DoctorsController : ControllerBase
     {
         private ILogger<DoctorsController> Logger;
@@ -28,82 +28,65 @@ namespace hms.Controllers
         {
             Doctor? doctor = await Ctx.Doctors.FindAsync(id);
             if (doctor == null)
-            {
                 return NotFound();
-            }
             return Ok(doctor);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Doctor>> Post(Doctor_New doctor)
+        public async Task<ActionResult<Doctor>> Post(DoctorDTOPost doctor)
         {
             Doctor d = new() {
                 Name = doctor.Name,
                 MaxQualification = doctor.MaxQualification,
                 Specialization = doctor.Specialization
             };
-            try
-            {
-                Ctx.Doctors.Add(d);
-                await Ctx.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Post Doctor: " + ex.Message);
-                return StatusCode(500);
-            }
+            Ctx.Doctors.Add(d);
+            await Ctx.SaveChangesAsync();
             return CreatedAtRoute("GetDoctorById", new { id = d.Id }, d);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Doctor>> Put(int id, Doctor_New doctor)
+        public async Task<ActionResult> Put(int id, DoctorDTOPost doctor)
         {
+            if (await Ctx.Doctors.FindAsync(id) == null)
+                return NotFound();
             Doctor d = new() {
                 Id = id,
                 Name = doctor.Name,
                 MaxQualification = doctor.MaxQualification,
                 Specialization = doctor.Specialization
             };
-            try
-            {
-                Ctx.Doctors.Update(d);
-                if (await Ctx.SaveChangesAsync() <= 0)
-                {
-                    return NotFound(d);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Doctor Put: " + ex.Message);
-                return StatusCode(500);
-            }
-            return d;
+            Ctx.Doctors.Update(d);
+            await Ctx.SaveChangesAsync();
+            return Ok();
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<Doctor>> Patch(int id, Doctor_Optional doctor)
+        public async Task<ActionResult> Patch(int id, DoctorDTOPut doctor)
         {
-            // TODO: implement this
-            return StatusCode(500);
+            Doctor? d = new() { Id = id };
+            d = await Ctx.Doctors.FindAsync(id);
+            if (d == null)
+                return NotFound();
+            if (doctor.Name != null)
+                d.Name = doctor.Name;
+            if (doctor.Specialization != null)
+                d.Specialization = doctor.Specialization;
+            if (doctor.MaxQualification != null)
+                d.MaxQualification = doctor.MaxQualification;
+            Ctx.Doctors.Update(d);
+            await Ctx.SaveChangesAsync();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            try
-            {
-                Doctor d = new() { Id = id };
-                Ctx.Doctors.Remove(d);
-                if (await Ctx.SaveChangesAsync() <= 0)
-                {
-                    return NotFound(d);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Doctor Delete: " + ex.Message);
-                return StatusCode(500);
-            }
+            Doctor? d = await Ctx.Doctors.FindAsync(id);
+            if (d == null)
+                return NotFound();
+            Ctx.Doctors.Remove(d);
+            await Ctx.SaveChangesAsync();
             return Ok();
         }
     }

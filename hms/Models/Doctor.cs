@@ -20,13 +20,13 @@ namespace hms.Models
         public string? Specialization { get; set; }
     }
 
-    public class Doctor_New
+    public class DoctorDTOPost
     {
         public required string Name { get; set; }
         public required string MaxQualification { get; set; }
         public required string Specialization { get; set; }
     }
-    public class Doctor_Optional
+    public class DoctorDTOPut
     {
         public string? Name { get; set; }
         public string? MaxQualification { get; set; }
