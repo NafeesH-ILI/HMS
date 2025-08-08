@@ -69,9 +69,10 @@ namespace hms.Controllers
         [HttpPut("{uname}")]
         public async Task<ActionResult> Put(string uname, DepartmentDtoPut department)
         {
-            if (await ctx.Departments.FindAsync(uname) == null)
+            Department? d = await ctx.Departments.FindAsync(uname);
+            if (d == null)
                 return NotFound();
-            Department d = new() { UName = uname, Name = department.Name };
+            d.Name = department.Name;
             try
             {
                 ctx.Departments.Update(d);
