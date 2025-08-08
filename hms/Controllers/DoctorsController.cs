@@ -6,50 +6,40 @@ using System.Threading.Tasks;
 namespace hms.Controllers
 {
     [ApiController]
-    [Route("doctors")]
-    public class DoctorsController : ControllerBase
+    [Route("/api/v2/doctors")]
+    public class DoctorsController(ILogger<DoctorsController> logger) : ControllerBase
     {
-        private ILogger<DoctorsController> Logger;
-        private DbCtx Ctx;
-        public DoctorsController(ILogger<DoctorsController> logger)
-        {
-            Ctx = new DbCtx();
-            Logger = logger;
-        }
+        private readonly ILogger<DoctorsController> logger = logger;
+        private readonly DbCtx ctx = new ();
 
         [HttpGet]
-        public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetAll(int? page=1, int? page_size=10)
+        public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetAll(int page=1, int page_size=10)
         {
-            /*int lastId = 0;
-            if (after != null)
-                lastId = after.Value;
-            var res = Ctx.Doctors
-                .OrderBy(d => d.Id)
-                .Where(d => d.Id > lastId)
-                .Take(10)
-                .AsAsyncEnumerable();*/
             if (page <= 0)
                 page = 1;
             if (page_size <= 0 || page_size > 50)
                 page_size = 10;
-            var res = await Ctx.Doctors
-                .FromSql($"SELECT * FROM doctors ORDER BY id LIMIT {page_size} OFFSET {(page - 1) * page_size};")
+            var res = await ctx.Doctors
+                .OrderBy(d => d.UName)
+                .Skip((page - 1) * page_size)
+                .Take(page_size)
                 .ToListAsync();
+            if (res.Count == 0)
+                return NoContent();
             return Ok(res);
         }
 
-        [HttpGet("{id}", Name="GetDoctorById")]
-        public async Task<ActionResult<Doctor>> Get(int id)
+        [HttpGet("{uname}", Name="GetDoctorByUName")]
+        public async Task<ActionResult<Doctor>> Get(string uname)
         {
             Doctor? doctor;
             try
             {
-                //doctor = await Ctx.Doctors.FindAsync(id);
-                doctor = Ctx.Doctors.FromSql($"SELECT * FROM doctors WHERE id={id}").First();
+                doctor = await ctx.Doctors.FindAsync(uname);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to Get doctor with id={0}", id);
+                logger.LogError(ex, "Failed to Get doctor with uname={0}", uname);
                 return BadRequest();
             }
             if (doctor == null)
@@ -61,54 +51,55 @@ namespace hms.Controllers
         public async Task<ActionResult<Doctor>> Post(DoctorDtoNew doctor)
         {
             Doctor d = new() {
+                UName = UNamer.Generate("doctors", doctor.Name),
                 Name = doctor.Name,
                 MaxQualification = doctor.MaxQualification,
                 Specialization = doctor.Specialization,
-                //DeptId = doctor.DeptId,
+                DeptKey = doctor.DeptKey,
             };
             try
             {
-                Ctx.Doctors.Add(d);
-                await Ctx.SaveChangesAsync();
+                ctx.Doctors.Add(d);
+                await ctx.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to Post doctor");
+                logger.LogError(ex, "Failed to Post doctor");
                 return BadRequest();
             }
-            return CreatedAtRoute("GetDoctorById", new { id = d.Id }, d);
+            return CreatedAtRoute("GetDoctorByUName", new { uname = d.UName }, d);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, DoctorDtoNew doctor)
+        [HttpPut("{uname}")]
+        public async Task<ActionResult> Put(string uname, DoctorDtoNew doctor)
         {
-            if (await Ctx.Doctors.FindAsync(id) == null)
+            if (await ctx.Doctors.CountAsync(d => d.UName == uname) == 0)
                 return NotFound();
             Doctor d = new()
             {
-                Id = id,
+                UName = uname,
                 Name = doctor.Name,
                 MaxQualification = doctor.MaxQualification,
                 Specialization = doctor.Specialization,
-                //DeptId = doctor.DeptId
+                DeptKey = doctor.DeptKey
             };
             try
             {
-                Ctx.Doctors.Update(d);
-                await Ctx.SaveChangesAsync();
+                ctx.Doctors.Update(d);
+                await ctx.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to Put doctor");
+                logger.LogError(ex, "Failed to Put doctor");
                 return BadRequest();
             }
             return Ok();
         }
 
-        [HttpPatch("{id}")]
-        public async Task<ActionResult> Patch(int id, DoctorDtoPatch doctor)
+        [HttpPatch("{uname}")]
+        public async Task<ActionResult> Patch(string uname, DoctorDtoPatch doctor)
         {
-            Doctor? d = await Ctx.Doctors.FindAsync(id);
+            Doctor? d = await ctx.Doctors.FindAsync(uname);
             if (d == null)
                 return NotFound();
             if (doctor.Name != null)
@@ -117,16 +108,16 @@ namespace hms.Controllers
                 d.Specialization = doctor.Specialization;
             if (doctor.MaxQualification != null)
                 d.MaxQualification = doctor.MaxQualification;
-            //if (doctor.DeptId != null)
-            //    d.DeptId = doctor.DeptId;
+            if (doctor.DeptKey != null)
+                d.DeptKey = doctor.DeptKey;
             try
             {
-                Ctx.Doctors.Update(d);
-                await Ctx.SaveChangesAsync();
+                ctx.Doctors.Update(d);
+                await ctx.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Faield to Patch Doctor");
+                logger.LogError(ex, "Faield to Patch Doctor");
                 return BadRequest();
             }
             return Ok();
@@ -135,17 +126,17 @@ namespace hms.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            Doctor? d = await Ctx.Doctors.FindAsync(id);
+            Doctor? d = await ctx.Doctors.FindAsync(id);
             if (d == null)
                 return NotFound();
             try
             {
-                Ctx.Doctors.Remove(d);
-                await Ctx.SaveChangesAsync();
+                ctx.Doctors.Remove(d);
+                await ctx.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to Delete Doctor");
+                logger.LogError(ex, "Failed to Delete Doctor");
                 return BadRequest();
             }
             return Ok();

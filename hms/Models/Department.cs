@@ -6,9 +6,9 @@ namespace hms.Models
     [Table("departments")]
     public class Department
     {
-        [Column("id")]
+        [Column("uname")]
         [Key]
-        public int Id { get; set; }
+        public required string UName { get; set; }
 
         [Column("name")]
         public string? Name { get; set; }
@@ -16,8 +16,13 @@ namespace hms.Models
         //[InverseProperty(nameof(Doctor))]
         //public ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
     }
-    
+
     public record DepartmentDtoNew
+    {
+        public required string UName { get; set; }
+        public required string Name { get; set; }
+    }
+    public record DepartmentDtoPut
     {
         public required string Name { get; set; }
     }

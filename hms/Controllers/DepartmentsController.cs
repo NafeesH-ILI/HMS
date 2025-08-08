@@ -5,43 +5,40 @@ using Microsoft.EntityFrameworkCore;
 namespace hms.Controllers
 {
     [ApiController]
-    [Route("departments")]
-    public class DepartmentsController : ControllerBase
+    [Route("/api/v2/departments")]
+    public class DepartmentsController(ILogger<DepartmentsController> logger) : ControllerBase
     {
-        private ILogger<DepartmentsController> Logger;
-        private DbCtx Ctx;
-
-        public DepartmentsController(ILogger<DepartmentsController> logger)
-        {
-            this.Logger = logger;
-            this.Ctx = new DbCtx();
-        }
+        private readonly ILogger<DepartmentsController> logger = logger;
+        private readonly DbCtx ctx = new ();
 
         [HttpGet]
-        public ActionResult<IAsyncEnumerable<Department>> GetAll(int? after=0)
+        public async Task<ActionResult<IAsyncEnumerable<Department>>> GetAll(int page=0, int page_size=10)
         {
-            int lastId = 0;
-            if (after != null)
-                lastId = after.Value;
-            var res = Ctx.Departments
-                .OrderBy(d => d.Id)
-                .Where(d => d.Id > lastId)
-                .Take(10)
-                .AsAsyncEnumerable();
+            if (page <= 0)
+                page = 1;
+            if (page_size <= 0 || page_size > 50)
+                page_size = 10;
+            var res = await ctx.Departments
+                .OrderBy(d => d.UName)
+                .Skip((page - 1) * page_size)
+                .Take(page_size)
+                .ToListAsync();
+            if (res.Count == 0)
+                return NoContent();
             return Ok(res);
         }
 
-        [HttpGet("{id}", Name="GetDepartmentById")]
-        public async Task<ActionResult<Department>> Get(int id)
+        [HttpGet("{uname}", Name="GetDepartmentByUName")]
+        public async Task<ActionResult<Department>> Get(string uname)
         {
             Department? department;
             try
             {
-                department = await Ctx.Departments.FindAsync(id);
+                department = await ctx.Departments.FindAsync(uname);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to Get Department with id={0}", id);
+                logger.LogError(ex, "Failed to Get Department with id={0}", uname);
                 return BadRequest();
             }
             if (department == null)
@@ -52,53 +49,56 @@ namespace hms.Controllers
         [HttpPost]
         public async Task<ActionResult<Department>> Post(DepartmentDtoNew department)
         {
-            Department d = new() { Name = department.Name };
+            Department d = new() {
+                UName = department.UName,
+                Name = department.Name
+            };
             try
             {
-                Ctx.Departments.Add(d);
-                await Ctx.SaveChangesAsync();
+                ctx.Departments.Add(d);
+                await ctx.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to Post department");
+                logger.LogError(ex, "Failed to Post department");
                 return BadRequest();
             }
-            return CreatedAtRoute("GetDepartmentById", new { id = d.Id }, d);
+            return CreatedAtRoute("GetDepartmentByUName", new { uname = d.UName }, d);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, DepartmentDtoNew department)
+        [HttpPut("{uname}")]
+        public async Task<ActionResult> Put(string uname, DepartmentDtoPut department)
         {
-            if (await Ctx.Departments.FindAsync(id) == null)
+            if (await ctx.Departments.FindAsync(uname) == null)
                 return NotFound();
-            Department d = new() { Id = id, Name = department.Name };
+            Department d = new() { UName = uname, Name = department.Name };
             try
             {
-                Ctx.Departments.Update(d);
-                await Ctx.SaveChangesAsync();
+                ctx.Departments.Update(d);
+                await ctx.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to Put department");
+                logger.LogError(ex, "Failed to Put department");
                 return BadRequest();
             }
             return Ok();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        [HttpDelete("{uname}")]
+        public async Task<ActionResult> Delete(string uname)
         {
-            Department? d = await Ctx.Departments.FindAsync(id);
+            Department? d = await ctx.Departments.FindAsync(uname);
             if (d == null)
                 return NotFound();
             try
             {
-                Ctx.Departments.Remove(d);
-                await Ctx.SaveChangesAsync();
+                ctx.Departments.Remove(d);
+                await ctx.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to Delete Department");
+                logger.LogError(ex, "Failed to Delete Department");
                 return BadRequest();
             }
             return Ok();
