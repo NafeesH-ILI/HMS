@@ -15,7 +15,7 @@ namespace hms.Controllers
         private readonly NpgsqlDataSource db = NpgsqlDataSource.Create(DbCtx.ConnStr)!;
 
         [HttpGet]
-        public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetAll(int page = 1, int page_size = 10)
+        public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetAll(int page = 1, int page_size = 10, string? fmt=null)
         {
             if (page <= 0)
                 page = 1;
@@ -24,9 +24,15 @@ namespace hms.Controllers
             IList<Doctor> doctors = [];
             try
             {
-                await using var cmd = db.CreateCommand("SELECT * FROM doctors ORDER BY uname OFFSET @offset LIMIT @limit;");
+                string q = "SELECT * FROM doctors ";
+                if (fmt != null)
+                    q += " WHERE name LIKE @fmt";
+                q += " ORDER BY uname OFFSET @offset LIMIT @limit;";
+                await using var cmd = db.CreateCommand(q);
                 cmd.Parameters.AddWithValue("offset", (page - 1) * page_size);
                 cmd.Parameters.AddWithValue("limit", page_size);
+                if (fmt != null)
+                    cmd.Parameters.AddWithValue("fmt", fmt);
                 await using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
@@ -44,8 +50,9 @@ namespace hms.Controllers
                     return Ok(doctors);
                 return NoContent();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.LogError(ex, "Get Doctors v1");
                 return BadRequest();
             }
         }
