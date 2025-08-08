@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-using hms.Models;
+﻿using hms.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace hms.Controllers
 {
@@ -18,17 +18,23 @@ namespace hms.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IAsyncEnumerable<Doctor>> GetAll(int? after=0)
+        public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetAll(int? page=1, int? page_size=10)
         {
-            int lastId = 0;
+            /*int lastId = 0;
             if (after != null)
                 lastId = after.Value;
-            Logger.LogInformation("lastId = " + lastId);
             var res = Ctx.Doctors
                 .OrderBy(d => d.Id)
                 .Where(d => d.Id > lastId)
                 .Take(10)
-                .AsAsyncEnumerable();
+                .AsAsyncEnumerable();*/
+            if (page <= 0)
+                page = 1;
+            if (page_size <= 0 || page_size > 50)
+                page_size = 10;
+            var res = await Ctx.Doctors
+                .FromSql($"SELECT * FROM doctors ORDER BY id LIMIT {page_size} OFFSET {(page - 1) * page_size};")
+                .ToListAsync();
             return Ok(res);
         }
 
@@ -51,12 +57,13 @@ namespace hms.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Doctor>> Post(DoctorDtoPost doctor)
+        public async Task<ActionResult<Doctor>> Post(DoctorDtoNew doctor)
         {
             Doctor d = new() {
                 Name = doctor.Name,
                 MaxQualification = doctor.MaxQualification,
-                Specialization = doctor.Specialization
+                Specialization = doctor.Specialization,
+                //DeptId = doctor.DeptId,
             };
             try
             {
@@ -72,15 +79,17 @@ namespace hms.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, DoctorDtoPost doctor)
+        public async Task<ActionResult> Put(int id, DoctorDtoNew doctor)
         {
             if (await Ctx.Doctors.FindAsync(id) == null)
                 return NotFound();
-            Doctor d = new() {
+            Doctor d = new()
+            {
                 Id = id,
                 Name = doctor.Name,
                 MaxQualification = doctor.MaxQualification,
-                Specialization = doctor.Specialization
+                Specialization = doctor.Specialization,
+                //DeptId = doctor.DeptId
             };
             try
             {
@@ -96,10 +105,9 @@ namespace hms.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult> Patch(int id, DoctorDtoPut doctor)
+        public async Task<ActionResult> Patch(int id, DoctorDtoPatch doctor)
         {
-            Doctor? d = new() { Id = id };
-            d = await Ctx.Doctors.FindAsync(id);
+            Doctor? d = await Ctx.Doctors.FindAsync(id);
             if (d == null)
                 return NotFound();
             if (doctor.Name != null)
@@ -108,6 +116,8 @@ namespace hms.Controllers
                 d.Specialization = doctor.Specialization;
             if (doctor.MaxQualification != null)
                 d.MaxQualification = doctor.MaxQualification;
+            //if (doctor.DeptId != null)
+            //    d.DeptId = doctor.DeptId;
             try
             {
                 Ctx.Doctors.Update(d);

@@ -7,6 +7,7 @@ namespace hms
     {
         private static string _connStr = "Host=127.0.0.1;Username=postgres;Password=abcd1234;Database=hms";
         public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Department> Departments { get; set; }
 
         public DbCtx() { }
         public DbCtx(DbContextOptions<DbCtx> options) : base(options) { }
