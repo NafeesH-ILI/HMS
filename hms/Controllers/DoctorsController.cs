@@ -44,7 +44,8 @@ namespace hms.Controllers
             Doctor? doctor;
             try
             {
-                doctor = await Ctx.Doctors.FindAsync(id);
+                //doctor = await Ctx.Doctors.FindAsync(id);
+                doctor = Ctx.Doctors.FromSql($"SELECT * FROM doctors WHERE id={id}").First();
             }
             catch (Exception ex)
             {
