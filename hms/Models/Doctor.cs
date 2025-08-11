@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace hms.Models
 {
@@ -19,25 +20,14 @@ namespace hms.Models
         [Column("specialization")]
         public string? Specialization { get; set; }
 
-        //[ForeignKey(nameof(Department))]
         [Column("dept")]
         public string? DeptKey { get; set; }
 
-        //public Department Dept { get; set; } = null!;
+        [ForeignKey("DeptKey")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Department Dept { get; set; } = null!;
     }
-
-    public record DoctorsPaginated
-    {
-        public required int Count { get; set; }
-        public required IEnumerable<Doctor> Doctors { get; set; }
-    }
-
-    public record DoctorsPaginatedAsync
-    {
-        public required int Count { get; set; }
-        public required IAsyncEnumerable<Doctor> Doctors { get; set; }
-    }
-
+  
     public record DoctorDtoNew
     {
         public required string Name { get; set; }
