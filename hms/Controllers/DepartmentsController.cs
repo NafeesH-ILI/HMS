@@ -12,7 +12,7 @@ namespace hms.Controllers
         private readonly DbCtx ctx = new ();
 
         [HttpGet]
-        public async Task<ActionResult<IAsyncEnumerable<Department>>> GetAll(int page=0, int page_size=10)
+        public async Task<ActionResult<IAsyncEnumerable<Department>>> GetAll(int page=1, int page_size=10)
         {
             if (page <= 0)
                 page = 1;
@@ -23,9 +23,10 @@ namespace hms.Controllers
                 .Skip((page - 1) * page_size)
                 .Take(page_size)
                 .ToListAsync();
-            if (res.Count == 0)
+            var Count = await ctx.Departments.CountAsync();
+            if (Count == 0)
                 return NoContent();
-            return Ok(res);
+            return Ok(new PaginatedResponse<List<Department>> { Count = Count, Value = res});
         }
 
         [HttpGet("{uname}", Name="GetDepartmentByUName")]
