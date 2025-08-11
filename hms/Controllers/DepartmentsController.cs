@@ -40,12 +40,43 @@ namespace hms.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to Get Department with id={0}", uname);
+                logger.LogError(ex, "Failed to Get Department with uname={0}", uname);
                 return BadRequest();
             }
             if (department == null)
                 return NotFound();
             return Ok(department);
+        }
+
+        [HttpGet("{uname}/doctors")]
+        public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetDoctorsOfDept(string uname, int page = 1, int page_size = 10)
+        {
+            if (page <= 0)
+                page = 1;
+            if (page_size <= 0 || page_size > 50)
+                page_size = 10;
+            IEnumerable<Doctor> doctors;
+            int count;
+            try
+            {
+                doctors = await ctx.Doctors
+                    .OrderBy(d => d.UName)
+                    .Where(d => d.DeptKey == uname)
+                    .Skip((page - 1) * page_size)
+                    .Take(page_size)
+                    .ToListAsync();
+                count = await ctx.Doctors
+                    .Where(d => d.DeptKey == uname)
+                    .CountAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to get doctors of dept with uname={0}", uname);
+                return BadRequest();
+            }
+            if (count == 0)
+                return NoContent();
+            return Ok(new PaginatedResponse<IEnumerable<Doctor>> { Count = count, Value = doctors});
         }
 
         [HttpPost]
