@@ -26,6 +26,12 @@ namespace hms.Models
         //public Department Dept { get; set; } = null!;
     }
 
+    public record DoctorsPaginated
+    {
+        public required int Count { get; set; }
+        public required IEnumerable<Doctor> Doctors { get; set; }
+    } 
+
     public record DoctorDtoNew
     {
         public required string Name { get; set; }
