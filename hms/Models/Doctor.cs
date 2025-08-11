@@ -30,7 +30,13 @@ namespace hms.Models
     {
         public required int Count { get; set; }
         public required IEnumerable<Doctor> Doctors { get; set; }
-    } 
+    }
+
+    public record DoctorsPaginatedAsync
+    {
+        public required int Count { get; set; }
+        public required IAsyncEnumerable<Doctor> Doctors { get; set; }
+    }
 
     public record DoctorDtoNew
     {

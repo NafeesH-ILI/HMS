@@ -47,7 +47,7 @@ namespace hms.Controllers
                     doctors.Add(d);
                 }
                 if (doctors.Count > 0)
-                    return Ok(new DoctorsPaginated { Count = await Count(fmt), Doctors = doctors});
+                    return Ok(new PaginatedResponse<IList<Doctor>> { Count = await Count(fmt), Value = doctors });
                 return NoContent();
             }
             catch (Exception ex)

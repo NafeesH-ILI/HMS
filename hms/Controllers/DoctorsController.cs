@@ -24,9 +24,10 @@ namespace hms.Controllers
                 .Skip((page - 1) * page_size)
                 .Take(page_size)
                 .ToListAsync();
-            if (res.Count == 0)
+            var Count = await ctx.Doctors.CountAsync();
+            if (Count == 0)
                 return NoContent();
-            return Ok(res);
+            return Ok(new PaginatedResponse<List<Doctor>> { Count = Count, Value = res});
         }
 
         [HttpGet("{uname}", Name="GetDoctorByUName")]
