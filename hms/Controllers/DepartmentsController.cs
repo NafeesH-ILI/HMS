@@ -20,6 +20,7 @@ namespace hms.Controllers
                 page_size = 10;
             var res = await ctx.Departments
                 .OrderBy(d => d.UName)
+                //.Include(d => d.Doctors)
                 .Skip((page - 1) * page_size)
                 .Take(page_size)
                 .ToListAsync();
