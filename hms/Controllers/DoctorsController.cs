@@ -7,6 +7,7 @@ namespace hms.Controllers
 {
     [ApiController]
     [Route("/api/v2/doctors")]
+    [ErrorHandler]
     public class DoctorsController(ILogger<DoctorsController> logger) : ControllerBase
     {
         private readonly ILogger<DoctorsController> logger = logger;
