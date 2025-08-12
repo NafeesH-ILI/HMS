@@ -1,5 +1,6 @@
 ﻿using hms.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Data.SqlTypes;
 
 namespace hms.Repos
 {
@@ -18,12 +19,12 @@ namespace hms.Repos
             .CountAsync();
         }
 
-        public async Task<Doctor?> GetByUName(string uname)
+        public async Task<Doctor> GetByUName(string uname)
         {
             return await _ctx.Doctors
                 .Where(d => d.UName == uname)
                 .Include(d => d.Dept)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync() ?? throw new ErrNotFound();
         }
 
         public async Task<bool> ExistsByUName(string uname)
@@ -36,7 +37,7 @@ namespace hms.Repos
         public async Task<IList<Doctor>> Get(int page = 1, int pageSize = 10)
         {
             if (page < 1 || pageSize <= 0)
-                throw new Exception("Invalid pagination");
+                throw new ErrBadPagination();
             return await ctx.Doctors
                  .OrderBy(d => d.UName)
                  .Skip((page - 1) * pageSize)
@@ -60,7 +61,7 @@ namespace hms.Repos
         
         public async void Delete(string uname)
         {
-            _ctx.Doctors.Remove((await GetByUName(uname))!);
+            _ctx.Doctors.Remove((await GetByUName(uname)) ?? throw new ErrNotFound());
             await _ctx.SaveChangesAsync();
         }
     }
