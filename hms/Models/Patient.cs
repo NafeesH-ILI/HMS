@@ -20,6 +20,13 @@ namespace hms.Models
 
         [Required]
         [Column("dob")]
-        public DateOnly DateBirth { get; set; }
+        public DateOnly? DateBirth { get; set; }
+    }
+
+    public record PatientDto
+    {
+        public required string Phone { get; set; }
+        public required string Name { get; set; }
+        public required DateOnly DateBirth { get; set; }
     }
 }

@@ -12,6 +12,12 @@ namespace hms.Repos
         {
             return await _ctx.Patients.CountAsync();
         }
+        public async Task<int> CountByPhone(string phone)
+        {
+            return await _ctx.Patients
+                .Where(p => p.Phone == phone)
+                .CountAsync();
+        }
 
         public async Task<IList<Patient>> GetByPhone(string phone, int page = 1, int pageSize = 10)
         {
