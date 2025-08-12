@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace hms.Models
 {
@@ -8,24 +9,34 @@ namespace hms.Models
     {
         [Column("uname")]
         [Key]
+        [Required]
         public required string UName { get; set; }
 
         [Column("name")]
+        [Required]
+        [MaxLength(50)]
+        [MinLength(5)]
         public string? Name { get; set; }
 
         [Column("max_qual")]
+        [Required]
+        [MaxLength(50)]
         public string? MaxQualification { get; set; }
 
         [Column("specialization")]
+        [Required]
+        [MaxLength(50)]
         public string? Specialization { get; set; }
 
-        //[ForeignKey(nameof(Department))]
         [Column("dept")]
+        [Required]
         public string? DeptKey { get; set; }
 
-        //public Department Dept { get; set; } = null!;
+        [ForeignKey("DeptKey")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Department Dept { get; set; } = null!;
     }
-
+  
     public record DoctorDtoNew
     {
         public required string Name { get; set; }

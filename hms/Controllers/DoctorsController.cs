@@ -21,12 +21,14 @@ namespace hms.Controllers
                 page_size = 10;
             var res = await ctx.Doctors
                 .OrderBy(d => d.UName)
+                //.Include(d => d.Dept) // would make payload too heavy
                 .Skip((page - 1) * page_size)
                 .Take(page_size)
                 .ToListAsync();
-            if (res.Count == 0)
+            var Count = await ctx.Doctors.CountAsync();
+            if (Count == 0)
                 return NoContent();
-            return Ok(res);
+            return Ok(new PaginatedResponse<List<Doctor>> { Count = Count, Value = res});
         }
 
         [HttpGet("{uname}", Name="GetDoctorByUName")]
@@ -35,7 +37,10 @@ namespace hms.Controllers
             Doctor? doctor;
             try
             {
-                doctor = await ctx.Doctors.FindAsync(uname);
+                doctor = ctx.Doctors
+                    .Where(d => d.UName == uname)
+                    .Include(d => d.Dept)
+                    .FirstOrDefault();
             }
             catch (Exception ex)
             {
@@ -61,6 +66,7 @@ namespace hms.Controllers
             {
                 ctx.Doctors.Add(d);
                 await ctx.SaveChangesAsync();
+                d.Dept = (await ctx.Departments.FindAsync(d.DeptKey))!;
             }
             catch (Exception ex)
             {

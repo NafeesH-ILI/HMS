@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace hms.Models
 {
@@ -8,13 +9,18 @@ namespace hms.Models
     {
         [Column("uname")]
         [Key]
+        [Required]
         public required string UName { get; set; }
 
         [Column("name")]
+        [MaxLength(100)]
+        [MinLength(2)]
+        [Required]
         public string? Name { get; set; }
 
-        //[InverseProperty(nameof(Doctor))]
-        //public ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
+        [InverseProperty("dept")]
+        [JsonIgnore]
+        public ICollection<Doctor> Doctors { get; set; } = [];
     }
 
     public record DepartmentDtoNew

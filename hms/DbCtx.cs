@@ -15,7 +15,14 @@ namespace hms
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(ConnStr);
+            optionsBuilder
+                .UseNpgsql(ConnStr)
+                .UseSeeding(async (ctx, _) =>
+                {
+                    Department department = new() { UName = "crd", Name = "Cardiology" };
+                    ctx.Add(department);
+                    await ctx.SaveChangesAsync();
+                });
         }
 
         public bool CanConnect()

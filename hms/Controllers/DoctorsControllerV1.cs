@@ -47,7 +47,7 @@ namespace hms.Controllers
                     doctors.Add(d);
                 }
                 if (doctors.Count > 0)
-                    return Ok(doctors);
+                    return Ok(new PaginatedResponse<IList<Doctor>> { Count = await Count(fmt), Value = doctors });
                 return NoContent();
             }
             catch (Exception ex)
@@ -114,10 +114,21 @@ namespace hms.Controllers
             }
         }
         
-        private async Task<int> Count(string uname)
+        private async Task<int> CountByUname(string uname)
         {
             await using var cmd = db.CreateCommand("SELECT Count(*) FROM doctors WHERE uname=@uname;");
             cmd.Parameters.AddWithValue("uname", uname);
+            await using var reader = cmd.ExecuteReader();
+            await reader.ReadAsync();
+            return reader.GetInt32(0);
+        }
+
+        private async Task<int> Count(string? fmt = null)
+        {
+            await using var cmd = db.CreateCommand("SELECT Count(*) FROM doctors " +
+                (fmt == null ? ";" : "WHERE name LIKE @fmt;"));
+            if (fmt != null)
+                cmd.Parameters.AddWithValue("fmt", fmt);
             await using var reader = cmd.ExecuteReader();
             await reader.ReadAsync();
             return reader.GetInt32(0);
@@ -128,7 +139,7 @@ namespace hms.Controllers
         {
             try
             {
-                if (await Count(uname) == 0)
+                if (await CountByUname(uname) == 0)
                     return NotFound();
                 Doctor d = new()
                 {
