@@ -20,7 +20,10 @@ namespace hms.Repos
 
         public async Task<Doctor?> GetByUName(string uname)
         {
-            return await _ctx.Doctors.FindAsync(uname);
+            return await _ctx.Doctors
+                .Where(d => d.UName == uname)
+                .Include(d => d.Dept)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<bool> ExistsByUName(string uname)
@@ -30,7 +33,7 @@ namespace hms.Repos
                 .CountAsync() > 0;
         }
 
-        public async Task<IList<Doctor>> Get(string uname, int page = 1, int pageSize = 10)
+        public async Task<IList<Doctor>> Get(int page = 1, int pageSize = 10)
         {
             if (page < 1 || pageSize <= 0)
                 throw new Exception("Invalid pagination");
@@ -41,8 +44,10 @@ namespace hms.Repos
                  .ToListAsync();
         }
 
-        public async void Add(Doctor doctor)
+        public async Task Add(Doctor doctor)
         {
+            if (doctor.UName == "")
+                doctor.UName = UNamer.Generate("doctors", doctor.Name!);
             _ctx.Doctors.Add(doctor);
             await _ctx.SaveChangesAsync();
         }
