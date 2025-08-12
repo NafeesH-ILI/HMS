@@ -38,10 +38,7 @@ namespace hms.Controllers
         [HttpGet("{uname}", Name="GetDoctorByUName")]
         public async Task<ActionResult<Doctor>> Get(string uname)
         {
-            Doctor? doctor = await _doctors.GetByUName(uname);
-            if (doctor == null)
-                return NotFound();
-            return Ok(doctor);
+            return Ok(await _doctors.GetByUName(uname));
         }
 
         [HttpPost]
@@ -71,7 +68,7 @@ namespace hms.Controllers
                 Specialization = doctor.Specialization,
                 DeptKey = doctor.DeptKey
             };
-            _doctors.Update(d);
+            await _doctors.Update(d);
             return Ok();
         }
 
@@ -89,7 +86,7 @@ namespace hms.Controllers
                 d.MaxQualification = doctor.MaxQualification;
             if (doctor.DeptKey != null)
                 d.DeptKey = doctor.DeptKey;
-            _doctors.Update(d);
+            await _doctors.Update(d);
             return Ok();
         }
 
@@ -98,7 +95,7 @@ namespace hms.Controllers
         {
             if (!await _doctors.ExistsByUName(uname))
                 return NotFound();
-            _doctors.Delete(uname);
+            await _doctors.Delete(uname);
             return Ok();
         }
     }
