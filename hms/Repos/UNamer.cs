@@ -1,6 +1,6 @@
 ﻿using hms.Models;
 
-namespace hms
+namespace hms.Repos
 {
     public class UNamer
     {

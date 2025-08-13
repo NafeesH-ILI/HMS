@@ -1,4 +1,5 @@
 ﻿using hms.Models;
+using hms.Repos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;

@@ -9,6 +9,7 @@ namespace hms
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<UName> UNames { get; set; }
+        public DbSet<Patient> Patients { get; set; }
 
         public DbCtx() { }
         public DbCtx(DbContextOptions<DbCtx> options) : base(options) { }

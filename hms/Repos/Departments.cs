@@ -4,64 +4,56 @@ using System.Data.SqlTypes;
 
 namespace hms.Repos
 {
-    public class Doctors (DbCtx ctx)
+    public class Departments(DbCtx ctx)
     {
         private readonly DbCtx _ctx = ctx;
 
-        public async Task<int> Count(string? fmt = null)
+        public async Task<int> Count()
         {
-            if (fmt == null)
-            {
-                return await _ctx.Doctors.CountAsync();
-            }
-            return await _ctx.Doctors
-            .Where(d => d.Name != null && d.Name.Contains(fmt))
-            .CountAsync();
+            return await _ctx.Departments.CountAsync();
         }
 
-        public async Task<Doctor> GetByUName(string uname)
+        public async Task<Department> GetByUName(string uname)
         {
-            return await _ctx.Doctors
+            return await _ctx.Departments
                 .Where(d => d.UName == uname)
-                .Include(d => d.Dept)
+                .Include(d => d.Doctors)
                 .FirstOrDefaultAsync() ?? throw new ErrNotFound();
         }
 
         public async Task<bool> ExistsByUName(string uname)
         {
-            return await _ctx.Doctors
+            return await _ctx.Departments
                 .Where(d => d.UName == uname)
                 .CountAsync() > 0;
         }
 
-        public async Task<IList<Doctor>> Get(int page = 1, int pageSize = 10)
+        public async Task<IList<Department>> Get(int page = 1, int pageSize = 10)
         {
             if (page <= 0 || pageSize <= 0 || pageSize > 50)
                 throw new ErrBadPagination();
-            return await ctx.Doctors
+            return await ctx.Departments
                  .OrderBy(d => d.UName)
                  .Skip((page - 1) * pageSize)
                  .Take(pageSize)
                  .ToListAsync();
         }
 
-        public async Task Add(Doctor doctor)
+        public async Task Add(Department dept)
         {
-            if (doctor.UName == "")
-                doctor.UName = UNamer.Generate("doctors", doctor.Name!);
-            _ctx.Doctors.Add(doctor);
+            _ctx.Departments.Add(dept);
             await _ctx.SaveChangesAsync();
         }
 
-        public async Task Update(Doctor doctor)
+        public async Task Update(Department dept)
         {
-            _ctx.Doctors.Update(doctor);
+            _ctx.Departments.Update(dept);
             await _ctx.SaveChangesAsync();
         }
         
         public async Task Delete(string uname)
         {
-            _ctx.Doctors.Remove((await GetByUName(uname)) ?? throw new ErrNotFound());
+            _ctx.Departments.Remove((await GetByUName(uname)) ?? throw new ErrNotFound());
             await _ctx.SaveChangesAsync();
         }
     }

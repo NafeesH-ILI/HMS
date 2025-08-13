@@ -1,15 +1,35 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Data.SqlTypes;
+using System.Net.Http.Headers;
 
 namespace hms
 {
-    public class ErrorHandlerAttribute /*(ILogger<ErrorHandlerAttribute> logger)*/: ExceptionFilterAttribute
+    public class ErrorHandlerAttribute : ExceptionFilterAttribute
     {
-        //private readonly ILogger<ErrorHandlerAttribute> _logger = logger;
         public override void OnException(ExceptionContext ctx)
         {
-            ctx.Result = new BadRequestResult();
+            if (ctx.Exception is ErrNotFound)
+            {
+                ctx.Result = new NotFoundResult();
+            }
+            else if (ctx.Exception is ErrBadReq ||
+                ctx.Exception is SqlTypeException ||
+                ctx.Exception is ErrBadPagination)
+            {
+                ctx.Result = new BadRequestResult();
+            }
+            else
+            {
+                ctx.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
     }
+
+    public class ErrNotFound() : Exception { }
+
+    public class ErrBadReq() : Exception { }
+
+    public class ErrBadPagination() : Exception { }
 }
