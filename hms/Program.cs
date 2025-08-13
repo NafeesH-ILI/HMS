@@ -1,4 +1,5 @@
 using hms;
+using hms.Models;
 using hms.Repos;
 using hms.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,14 @@ builder.Services.AddControllers();
 // which swagger UI uses
 // also, this is removed in dotnet 9.0
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(config => {
+    config.CreateMap<PatientDto, Patient>();
+    config.CreateMap<DoctorDtoNew, Doctor>();
+    config.CreateMap<DoctorDtoPatch, Doctor>();
+    config.CreateMap<DepartmentDtoNew, Department>();
+    config.CreateMap<DepartmentDtoPut, Department>();
+});
 
 // register repos
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();

@@ -1,5 +1,6 @@
 ﻿using hms.Repos;
 using hms.Models;
+using AutoMapper;
 
 namespace hms.Services
 {
@@ -16,9 +17,11 @@ namespace hms.Services
         public Task Delete(string phone, string name);
     }
     public class PatientService(
-        IPatientRepository patientRepo) : IPatientService
+        IPatientRepository patientRepo,
+        IMapper mapper) : IPatientService
     {
         private readonly IPatientRepository _patientRepo = patientRepo;
+        private readonly IMapper _mapper = mapper;
         public async Task<int> Count()
         {
             return await _patientRepo.Count();
@@ -51,12 +54,7 @@ namespace hms.Services
 
         public async Task<Patient> Add(PatientDto patientDto)
         {
-            Patient p = new()
-            {
-                Phone = patientDto.Phone,
-                Name = patientDto.Name,
-                DateBirth = patientDto.DateBirth
-            };
+            Patient p = _mapper.Map<Patient>(patientDto);
             await _patientRepo.Add(p);
             return p;
         }
