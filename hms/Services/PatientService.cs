@@ -36,7 +36,7 @@ namespace hms.Services
 
         public async Task<Patient> GetByPhoneName(string phone, string name)
         {
-            return await _patientRepo.GetByPhoneName(phone, name);
+            return await _patientRepo.GetByPhoneName(phone, name) ?? throw new ErrNotFound();
         }
 
         public async Task<bool> ExistsByPhoneName(string phone, string name)
@@ -61,7 +61,7 @@ namespace hms.Services
 
         public async Task Delete(string phone, string name)
         {
-            await _patientRepo.Delete(phone, name);
+            await _patientRepo.Delete(await _patientRepo.GetByPhoneName(phone, name) ?? throw new ErrNotFound());
         }
     }
 }

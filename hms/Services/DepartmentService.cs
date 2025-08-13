@@ -27,7 +27,7 @@ namespace hms.Services
 
         public async Task<Department> GetByUName(string uname)
         {
-            return await _deptRepo.GetByUName(uname);
+            return await _deptRepo.GetByUName(uname) ?? throw new ErrNotFound();
         }
 
         public async Task<bool> ExistsByUName(string uname)
@@ -52,7 +52,7 @@ namespace hms.Services
 
         public async Task Delete(string uname)
         {
-            await _deptRepo.Delete(uname);
+            await _deptRepo.Delete(await GetByUName(uname) ?? throw new ErrNotFound());
         }
     }
 }

@@ -5,7 +5,8 @@ namespace hms.Services
 {
     public interface IDoctorService
     {
-        public Task<int> Count(string? fmt = null);
+        public Task<int> Count();
+        public Task<int> Count(string fmt);
         public Task<Doctor> GetByUName(string uname);
         public Task<bool> ExistsByUName(string uname);
         public Task<IList<Doctor>> Get(int page = 1, int pageSize = 10);
@@ -14,17 +15,23 @@ namespace hms.Services
         public Task Delete(string uname);
     }
     public class DoctorService(
-        IDoctorRepository doctorRepo) : IDoctorService
+        IDoctorRepository doctorRepo,
+        IUNameService namer) : IDoctorService
     {
         private readonly IDoctorRepository _doctorRepo = doctorRepo;
-        public async Task<int> Count(string? fmt = null)
+        private readonly IUNameService _namer = namer;
+        public async Task<int> Count()
+        {
+            return await _doctorRepo.Count();
+        }
+        public async Task<int> Count(string fmt)
         {
             return await _doctorRepo.Count(fmt);
         }
 
         public async Task<Doctor> GetByUName(string uname)
         {
-            return await _doctorRepo.GetByUName(uname);
+            return await _doctorRepo.GetByUName(uname) ?? throw new ErrNotFound();
         }
 
         public async Task<bool> ExistsByUName(string uname)
@@ -39,6 +46,8 @@ namespace hms.Services
 
         public async Task Add(Doctor doctor)
         {
+            if (doctor.UName == "")
+                doctor.UName = _namer.Generate("doctors", doctor.Name!);
             await _doctorRepo.Add(doctor);
         }
 
@@ -49,7 +58,7 @@ namespace hms.Services
 
         public async Task Delete(string uname)
         {
-            await _doctorRepo.Delete(uname);
+            await _doctorRepo.Delete(await GetByUName(uname) ?? throw new ErrNotFound());
         }
     }
 }

@@ -7,9 +7,10 @@ namespace hms.Repos
 {
     public interface IDoctorRepository
     {
-        public Task<int> Count(string? fmt = null);
+        public Task<int> Count();
+        public Task<int> Count(string fmt);
 
-        public Task<Doctor> GetByUName(string uname);
+        public Task<Doctor?> GetByUName(string uname);
 
         public Task<bool> ExistsByUName(string uname);
 
@@ -19,30 +20,31 @@ namespace hms.Repos
 
         public Task Update(Doctor doctor);
         
-        public Task Delete(string uname);
+        public Task Delete(Doctor doctor);
     }
     public class DoctorRepository (IUNameService namer, DbCtx ctx) : IDoctorRepository
     {
         private readonly IUNameService _namer = namer;
         private readonly DbCtx _ctx = ctx;
 
-        public async Task<int> Count(string? fmt = null)
+        public async Task<int> Count()
         {
-            if (fmt == null)
-            {
-                return await _ctx.Doctors.CountAsync();
-            }
-            return await _ctx.Doctors
-            .Where(d => d.Name != null && d.Name.Contains(fmt))
-            .CountAsync();
+            return await _ctx.Doctors.CountAsync();
         }
 
-        public async Task<Doctor> GetByUName(string uname)
+        public async Task<int> Count(string fmt)
+        {
+            return await _ctx.Doctors
+                .Where(d => d.Name != null && d.Name.Contains(fmt))
+                .CountAsync();
+        }
+
+        public async Task<Doctor?> GetByUName(string uname)
         {
             return await _ctx.Doctors
                 .Where(d => d.UName == uname)
                 .Include(d => d.Dept)
-                .FirstOrDefaultAsync() ?? throw new ErrNotFound();
+                .FirstOrDefaultAsync();
         }
 
         public async Task<bool> ExistsByUName(string uname)
@@ -65,8 +67,6 @@ namespace hms.Repos
 
         public async Task Add(Doctor doctor)
         {
-            if (doctor.UName == "")
-                doctor.UName = _namer.Generate("doctors", doctor.Name!);
             _ctx.Doctors.Add(doctor);
             await _ctx.SaveChangesAsync();
         }
@@ -77,9 +77,9 @@ namespace hms.Repos
             await _ctx.SaveChangesAsync();
         }
         
-        public async Task Delete(string uname)
+        public async Task Delete(Doctor doctor)
         {
-            _ctx.Doctors.Remove((await GetByUName(uname)) ?? throw new ErrNotFound());
+            _ctx.Doctors.Remove(doctor);
             await _ctx.SaveChangesAsync();
         }
     }

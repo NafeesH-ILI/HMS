@@ -8,7 +8,7 @@ namespace hms.Repos
     {
         public Task<int> Count();
 
-        public Task<Department> GetByUName(string uname);
+        public Task<Department?> GetByUName(string uname);
 
         public Task<bool> ExistsByUName(string uname);
 
@@ -18,7 +18,7 @@ namespace hms.Repos
 
         public Task Update(Department dept);
         
-        public Task Delete(string uname);
+        public Task Delete(Department depart);
     }
     public class DepartmentRepository(DbCtx ctx) : IDepartmentRepository
     {
@@ -29,12 +29,12 @@ namespace hms.Repos
             return await _ctx.Departments.CountAsync();
         }
 
-        public async Task<Department> GetByUName(string uname)
+        public async Task<Department?> GetByUName(string uname)
         {
             return await _ctx.Departments
                 .Where(d => d.UName == uname)
                 .Include(d => d.Doctors)
-                .FirstOrDefaultAsync() ?? throw new ErrNotFound();
+                .FirstOrDefaultAsync();
         }
 
         public async Task<bool> ExistsByUName(string uname)
@@ -67,9 +67,9 @@ namespace hms.Repos
             await _ctx.SaveChangesAsync();
         }
         
-        public async Task Delete(string uname)
+        public async Task Delete(Department dept)
         {
-            _ctx.Departments.Remove((await GetByUName(uname)) ?? throw new ErrNotFound());
+            _ctx.Departments.Remove(dept);
             await _ctx.SaveChangesAsync();
         }
     }

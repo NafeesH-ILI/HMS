@@ -72,8 +72,6 @@ namespace hms.Controllers
         [HttpDelete("{uname}")]
         public async Task<ActionResult> Delete(string uname)
         {
-            if (!await _deptService.ExistsByUName(uname))
-                return NotFound();
             await _deptService.Delete(uname);
             return Ok();
         }
