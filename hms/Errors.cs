@@ -10,6 +10,7 @@ namespace hms
     {
         public override void OnException(ExceptionContext ctx)
         {
+            Console.WriteLine(ctx.Exception);
             if (ctx.Exception is ErrNotFound)
             {
                 ctx.Result = new NotFoundResult();

@@ -77,7 +77,7 @@ namespace hms.Controllers
             return Ok();
         }
 
-        [HttpDelete("{phone}/{uname}")]
+        [HttpDelete("{phone}/{name}")]
         public async Task<ActionResult> Delete(string phone, string name)
         {
             await _patients.Delete(phone, name);

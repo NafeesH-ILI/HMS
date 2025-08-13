@@ -105,7 +105,7 @@ namespace hms.Controllers
                 cmd.Parameters.AddWithValue("max_qual", d.MaxQualification);
                 cmd.Parameters.AddWithValue("spec", d.Specialization);
                 cmd.Parameters.AddWithValue("dept", d.DeptKey);
-                if (cmd.ExecuteNonQuery() == 1)
+                if (await cmd.ExecuteNonQueryAsync() == 1)
                     return CreatedAtRoute("GetDoctorV1ByUName", new { uname = d.UName }, d);
                 return BadRequest();
             }
