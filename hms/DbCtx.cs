@@ -14,7 +14,7 @@ namespace hms
         public DbCtx() { }
         public DbCtx(DbContextOptions<DbCtx> options) : base(options) { }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
                 .UseNpgsql(ConnStr)
@@ -24,7 +24,7 @@ namespace hms
                     ctx.Add(department);
                     await ctx.SaveChangesAsync();
                 });
-        }
+        }*/
 
         public bool CanConnect()
         {

@@ -1,13 +1,19 @@
 ﻿using hms.Models;
 
-namespace hms.Repos
+namespace hms.Services
 {
-    public class UNamer
+    public interface IUNameService
     {
-        private static readonly DbCtx ctx = new();
+        public string UNameOf(string fullName);
+
+        public string Generate(string table, string fullName);
+    }
+
+    public class UNameService(DbCtx ctx) : IUNameService
+    {
+        private readonly DbCtx _ctx = ctx;
         private static readonly object _lock = new();
-        //private readonly static HashSet<(string, string)> ongoing = [];
-        public static string UNameOf(string fullName)
+        public string UNameOf(string fullName)
         {
             if (string.IsNullOrWhiteSpace(fullName))
                 return string.Empty;
@@ -22,25 +28,25 @@ namespace hms.Repos
             return $"{initials}.{last}";
         }
 
-        public static string Generate(string table, string fullName)
+        public string Generate(string table, string fullName)
         {
             string baseName = UNameOf(fullName);
             int count = 0;
             lock (_lock) // TODO: lock the DB table as well
             {
-                UName? uName = ctx.UNames.Where(u => u.Name == baseName && u.Table == table).FirstOrDefault();
+                UName? uName = _ctx.UNames.Where(u => u.Name == baseName && u.Table == table).FirstOrDefault();
                 if (uName == null)
                 {
                     uName = new UName() { Name = baseName, Table = table, Count = 1 };
-                    ctx.UNames.Add(uName);
+                    _ctx.UNames.Add(uName);
                 }
                 else
                 {
                     count = uName.Count;
                     uName.Count++;
-                    ctx.UNames.Update(uName);
+                    _ctx.UNames.Update(uName);
                 }
-                ctx.SaveChanges(); // TODO: await on it?
+                _ctx.SaveChanges(); // TODO: await on it?
             }
             if (count == 0)
                 return baseName;
