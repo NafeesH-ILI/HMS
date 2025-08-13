@@ -9,8 +9,8 @@ namespace hms.Services
         public Task<Department> GetByUName(string uname);
         public Task<bool> ExistsByUName(string uname);
         public Task<IList<Department>> Get(int page = 1, int pageSize = 10);
-        public Task Add(Department dept);
-        public Task Update(Department dept);
+        public Task<Department> Add(DepartmentDtoNew dept);
+        public Task Update(string uname, DepartmentDtoPut dept);
         public Task Delete(string uname);
     }
     public class DepartmentService(
@@ -40,14 +40,24 @@ namespace hms.Services
             return _deptRepo.Get(page, pageSize);
         }
 
-        public async Task Add(Department dept)
+        public async Task<Department> Add(DepartmentDtoNew dept)
         {
-            await _deptRepo.Add(dept);
+            Department d = new()
+            {
+                UName = dept.UName,
+                Name = dept.Name,
+            };
+            await _deptRepo.Add(d);
+            return d;
         }
 
-        public async Task Update(Department dept)
+        public async Task Update(string uname, DepartmentDtoPut dept)
         {
-            await _deptRepo.Update(dept);
+            if (!await ExistsByUName(uname))
+                throw new ErrNotFound();
+            Department d = await GetByUName(uname);
+            d.Name = dept.Name;
+            await _deptRepo.Update(d);
         }
 
         public async Task Delete(string uname)

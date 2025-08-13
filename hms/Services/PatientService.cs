@@ -11,8 +11,8 @@ namespace hms.Services
         public Task<Patient> GetByPhoneName(string phone, string name);
         public Task<bool> ExistsByPhoneName(string phone, string name);
         public Task<IList<Patient>> Get(int page = 1, int pageSize = 10);
-        public Task Add(Patient patient);
-        public Task Update(Patient patient);
+        public Task<Patient> Add(PatientDto patient);
+        public Task Update(string phone, string name, PatientDto patientDto);
         public Task Delete(string phone, string name);
     }
     public class PatientService(
@@ -49,14 +49,25 @@ namespace hms.Services
             return await _patientRepo.Get(page, pageSize);
         }
 
-        public async Task Add(Patient patient)
+        public async Task<Patient> Add(PatientDto patientDto)
         {
-            await _patientRepo.Add(patient);
+            Patient p = new()
+            {
+                Phone = patientDto.Phone,
+                Name = patientDto.Name,
+                DateBirth = patientDto.DateBirth
+            };
+            await _patientRepo.Add(p);
+            return p;
         }
 
-        public async Task Update(Patient patient)
+        public async Task Update(string phone, string name, PatientDto patientDto)
         {
-            await _patientRepo.Update(patient);
+            Patient p = await GetByPhoneName(phone, name);
+            p.Phone = patientDto.Phone;
+            p.Name = patientDto.Name;
+            p.DateBirth = patientDto.DateBirth;
+            await _patientRepo.Update(p);
         }
 
         public async Task Delete(string phone, string name)

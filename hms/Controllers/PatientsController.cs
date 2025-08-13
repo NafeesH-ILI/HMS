@@ -12,11 +12,9 @@ namespace hms.Controllers
     [ErrorHandler]
     public class PatientsController(
         ILogger<PatientsController> logger,
-        DbCtx ctx,
         IPatientService patientService) : ControllerBase
     {
         private readonly ILogger<PatientsController> _logger = logger;
-        private readonly DbCtx _ctx = ctx;
         private readonly IPatientService _patientService = patientService;
 
         [HttpGet]
@@ -52,26 +50,18 @@ namespace hms.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Patient>> Post(PatientDto patient)
+        public async Task<ActionResult<Patient>> Post(PatientDto patientDto)
         {
-            Patient p = new()
-            {
-                Phone = patient.Phone,
-                Name = patient.Name,
-                DateBirth = patient.DateBirth
-            };
-            await _patientService.Add(p);
-            return CreatedAtRoute("GetPatientByPhoneName", new {phone = p.Phone, name = p.Name}, p);
+            Patient patient = await _patientService.Add(patientDto);
+            return CreatedAtRoute("GetPatientByPhoneName",
+                new {phone = patient.Phone, name = patient.Name},
+                patient);
         }
 
         [HttpPut("{phone}/{name}")]
         public async Task<ActionResult> Put(string phone, string name, PatientDto patient)
         {
-            Patient p = await _patientService.GetByPhoneName(phone, name);
-            p.Phone = patient.Phone;
-            p.Name = patient.Name;
-            p.DateBirth = patient.DateBirth;
-            await _patientService.Update(p);
+            await _patientService.Update(phone, name, patient);
             return Ok();
         }
 

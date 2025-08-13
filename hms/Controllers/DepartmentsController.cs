@@ -38,8 +38,6 @@ namespace hms.Controllers
         [HttpGet("{uname}/doctors")]
         public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetDoctorsOfDept(string uname, int page = 1, int page_size = 10)
         {
-            if (page <= 0 || page_size <= 0 || page_size > 50)
-                throw new ErrBadPagination();
             Department department = await _deptService.GetByUName(uname);
             var doctors = department.Doctors.Skip((page - 1) * page_size).Take(page_size);
             int count = doctors.Count();
@@ -51,21 +49,14 @@ namespace hms.Controllers
         [HttpPost]
         public async Task<ActionResult<Department>> Post(DepartmentDtoNew department)
         {
-            Department d = new() {
-                UName = department.UName,
-                Name = department.Name
-            };
-            await _deptService.Add(d);
+            Department d = await _deptService.Add(department);
             return CreatedAtRoute("GetDepartmentByUName", new { uname = d.UName }, d);
         }
 
         [HttpPut("{uname}")]
         public async Task<ActionResult> Put(string uname, DepartmentDtoPut department)
         {
-            if (!await _deptService.ExistsByUName(uname))
-                throw new ErrNotFound();
-            Department? d = new Department { UName = uname, Name = department.Name };
-            await _deptService.Update(d);
+            await _deptService.Update(uname, department);
             return Ok();
         }
 
