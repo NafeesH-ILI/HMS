@@ -1,5 +1,5 @@
 ﻿using hms.Models;
-using hms.Repos;
+using hms.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +10,12 @@ namespace hms.Controllers
 {
     [ApiController]
     [Route("/api/v1/doctors")]
-    public class DoctorsControllerV1(ILogger<DoctorsControllerV1> logger) : ControllerBase
+    public class DoctorsControllerV1(
+        ILogger<DoctorsControllerV1> logger,
+        IUNameService namer) : ControllerBase
     {
         private readonly ILogger<DoctorsControllerV1> logger = logger;
+        private readonly IUNameService _namer = namer;
         private readonly NpgsqlDataSource db = NpgsqlDataSource.Create(DbCtx.ConnStr)!;
 
         [HttpGet]
@@ -90,7 +93,7 @@ namespace hms.Controllers
         public async Task<ActionResult> Post(DoctorDtoNew doctor)
         {
             Doctor d = new() {
-                UName = UNamer.Generate("doctors", doctor.Name),
+                UName = _namer.Generate("doctors", doctor.Name),
                 Name = doctor.Name,
                 MaxQualification = doctor.MaxQualification,
                 Specialization = doctor.Specialization,

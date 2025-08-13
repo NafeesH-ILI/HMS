@@ -8,18 +8,14 @@ namespace hms.Controllers
     [ApiController]
     [Route("/api/v2/departments")]
     [ErrorHandler]
-    public class DepartmentsController : ControllerBase
+    public class DepartmentsController(
+        ILogger<DepartmentsController> logger,
+        DbCtx ctx,
+        IDepartmentRepository deptRepo) : ControllerBase
     {
-        private readonly ILogger<DepartmentsController> _logger;
-        private readonly DbCtx _ctx;
-        private readonly Departments _departments;
-
-        public DepartmentsController(ILogger<DepartmentsController> logger)
-        {
-            this._logger = logger;
-            this._ctx = new ();
-            this._departments = new Departments(_ctx);
-        }
+        private readonly ILogger<DepartmentsController> _logger = logger;
+        private readonly DbCtx _ctx = ctx;
+        private readonly IDepartmentRepository _departments = deptRepo;
 
         [HttpGet]
         public async Task<ActionResult<IAsyncEnumerable<Department>>> GetAll(int page=1, int page_size=10)

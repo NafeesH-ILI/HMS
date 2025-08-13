@@ -1,11 +1,29 @@
 ﻿using hms.Models;
+using hms.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Data.SqlTypes;
 
 namespace hms.Repos
 {
-    public class Doctors (DbCtx ctx)
+    public interface IDoctorRepository
     {
+        public Task<int> Count(string? fmt = null);
+
+        public Task<Doctor> GetByUName(string uname);
+
+        public Task<bool> ExistsByUName(string uname);
+
+        public Task<IList<Doctor>> Get(int page = 1, int pageSize = 10);
+
+        public Task Add(Doctor doctor);
+
+        public Task Update(Doctor doctor);
+        
+        public Task Delete(string uname);
+    }
+    public class DoctorRepository (IUNameService namer, DbCtx ctx) : IDoctorRepository
+    {
+        private readonly IUNameService _namer = namer;
         private readonly DbCtx _ctx = ctx;
 
         public async Task<int> Count(string? fmt = null)
@@ -48,7 +66,7 @@ namespace hms.Repos
         public async Task Add(Doctor doctor)
         {
             if (doctor.UName == "")
-                doctor.UName = UNamer.Generate("doctors", doctor.Name!);
+                doctor.UName = _namer.Generate("doctors", doctor.Name!);
             _ctx.Doctors.Add(doctor);
             await _ctx.SaveChangesAsync();
         }

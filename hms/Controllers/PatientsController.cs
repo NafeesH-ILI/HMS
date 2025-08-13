@@ -2,24 +2,21 @@
 using hms.Repos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace hms.Controllers
 {
     [ApiController]
     [Route("/api/v2/patients")]
     [ErrorHandler]
-    public class PatientsController : ControllerBase
+    public class PatientsController(
+        ILogger<PatientsController> logger,
+        DbCtx ctx,
+        IPatientRepository patientRepo) : ControllerBase
     {
-        private readonly ILogger<PatientsController> _logger;
-        private readonly DbCtx _ctx;
-        private readonly Patients _patients;
-
-        public PatientsController(ILogger<PatientsController> logger)
-        {
-            this._logger = logger;
-            this._ctx = new();
-            this._patients = new Patients(_ctx);
-        }
+        private readonly ILogger<PatientsController> _logger = logger;
+        private readonly DbCtx _ctx = ctx;
+        private readonly IPatientRepository _patients = patientRepo;
 
         [HttpGet]
         public async Task<ActionResult<IAsyncEnumerable<Patient>>> GetAll(int page = 1, int page_size = 10)

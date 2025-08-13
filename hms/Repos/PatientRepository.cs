@@ -4,7 +4,28 @@ using System.Data.SqlTypes;
 
 namespace hms.Repos
 {
-    public class Patients(DbCtx ctx)
+    public interface IPatientRepository
+    {
+        public Task<int> Count();
+
+        public Task<int> CountByPhone(string phone);
+
+        public Task<IList<Patient>> GetByPhone(string phone, int page = 1, int pageSize = 10);
+
+        public Task<Patient> GetByPhoneName(string phone, string name);
+
+        public Task<bool> ExistsByPhoneName(string phone, string name);
+
+        public Task<IList<Patient>> Get(int page = 1, int pageSize = 10);
+
+        public Task Add(Patient patient);
+
+        public Task Update(Patient patient);
+
+        public Task Delete(string phone, string name);
+    }
+    
+    public class PatientRepository(DbCtx ctx) : IPatientRepository
     {
         private readonly DbCtx _ctx = ctx;
 

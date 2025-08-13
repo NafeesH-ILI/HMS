@@ -1,4 +1,7 @@
 using hms;
+using hms.Repos;
+using hms.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,13 @@ builder.Services.AddControllers();
 // which swagger UI uses
 // also, this is removed in dotnet 9.0
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IUNameService, UNameService>();
+
+builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(DbCtx.ConnStr));
 
 // finally build as WebApplication from this WebApplicationBuilder
 // this is where thhose appsettings.json etc get read

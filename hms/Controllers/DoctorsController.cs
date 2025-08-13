@@ -9,18 +9,14 @@ namespace hms.Controllers
     [ApiController]
     [Route("/api/v2/doctors")]
     [ErrorHandler]
-    public class DoctorsController : ControllerBase
+    public class DoctorsController(
+        ILogger<DoctorsController> logger,
+        DbCtx ctx,
+        IDoctorRepository doctorRepo) : ControllerBase
     {
-        private readonly ILogger<DoctorsController> _logger;
-        private readonly DbCtx _ctx;
-        private readonly Doctors _doctors;
-
-        public DoctorsController(ILogger<DoctorsController> logger)
-        {
-            _logger = logger;
-            _ctx = new();
-            _doctors = new Doctors(_ctx);
-        }
+        private readonly ILogger<DoctorsController> _logger = logger;
+        private readonly DbCtx _ctx = ctx;
+        private readonly IDoctorRepository _doctors = doctorRepo;
 
         [HttpGet]
         public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetAll(int page=1, int page_size=10)
