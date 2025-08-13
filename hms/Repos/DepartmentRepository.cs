@@ -48,7 +48,7 @@ namespace hms.Repos
         {
             if (page <= 0 || pageSize <= 0 || pageSize > 50)
                 throw new ErrBadPagination();
-            return await ctx.Departments
+            return await _ctx.Departments
                  .OrderBy(d => d.UName)
                  .Skip((page - 1) * pageSize)
                  .Take(pageSize)
