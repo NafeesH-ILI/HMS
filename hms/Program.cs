@@ -16,11 +16,18 @@ builder.Services.AddControllers();
 // also, this is removed in dotnet 9.0
 builder.Services.AddSwaggerGen();
 
+// register repos
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+
+// register services
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IUNameService, UNameService>();
 
+// db ctx pool
 builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(DbCtx.ConnStr));
 
 // finally build as WebApplication from this WebApplicationBuilder

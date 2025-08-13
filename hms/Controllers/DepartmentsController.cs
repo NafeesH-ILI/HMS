@@ -1,5 +1,6 @@
 ﻿using hms.Models;
 using hms.Repos;
+using hms.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,30 +11,28 @@ namespace hms.Controllers
     [ErrorHandler]
     public class DepartmentsController(
         ILogger<DepartmentsController> logger,
-        DbCtx ctx,
-        IDepartmentRepository deptRepo) : ControllerBase
+        IDepartmentService deptService) : ControllerBase
     {
         private readonly ILogger<DepartmentsController> _logger = logger;
-        private readonly DbCtx _ctx = ctx;
-        private readonly IDepartmentRepository _departments = deptRepo;
+        private readonly IDepartmentService _deptService = deptService;
 
         [HttpGet]
         public async Task<ActionResult<IAsyncEnumerable<Department>>> GetAll(int page=1, int page_size=10)
         {
-            var count = await _departments.Count();
+            var count = await _deptService.Count();
             if (count == 0)
                 return NoContent();
             return Ok(new PaginatedResponse<IList<Department>>
             {
                 Count = count,
-                Value = await _departments.Get(page, page_size)
+                Value = await _deptService.Get(page, page_size)
             });
         }
 
         [HttpGet("{uname}", Name="GetDepartmentByUName")]
         public async Task<ActionResult<Department>> Get(string uname)
         {
-            return Ok(await _departments.GetByUName(uname));
+            return Ok(await _deptService.GetByUName(uname));
         }
 
         [HttpGet("{uname}/doctors")]
@@ -41,7 +40,7 @@ namespace hms.Controllers
         {
             if (page <= 0 || page_size <= 0 || page_size > 50)
                 throw new ErrBadPagination();
-            Department department = await _departments.GetByUName(uname);
+            Department department = await _deptService.GetByUName(uname);
             var doctors = department.Doctors.Skip((page - 1) * page_size).Take(page_size);
             int count = doctors.Count();
             if (count == 0)
@@ -56,26 +55,26 @@ namespace hms.Controllers
                 UName = department.UName,
                 Name = department.Name
             };
-            await _departments.Add(d);
+            await _deptService.Add(d);
             return CreatedAtRoute("GetDepartmentByUName", new { uname = d.UName }, d);
         }
 
         [HttpPut("{uname}")]
         public async Task<ActionResult> Put(string uname, DepartmentDtoPut department)
         {
-            if (!await _departments.ExistsByUName(uname))
+            if (!await _deptService.ExistsByUName(uname))
                 throw new ErrNotFound();
             Department? d = new Department { UName = uname, Name = department.Name };
-            await _departments.Update(d);
+            await _deptService.Update(d);
             return Ok();
         }
 
         [HttpDelete("{uname}")]
         public async Task<ActionResult> Delete(string uname)
         {
-            if (!await _departments.ExistsByUName(uname))
+            if (!await _deptService.ExistsByUName(uname))
                 return NotFound();
-            await _departments.Delete(uname);
+            await _deptService.Delete(uname);
             return Ok();
         }
     }
