@@ -6,9 +6,12 @@ using System.Text.Json.Serialization;
 namespace hms.Models
 {
     [Table("patients")]
-    [PrimaryKey(nameof(Phone), nameof(Name))]
     public class Patient
     {
+        [Required]
+        [Key]
+        public required string UName { get; set; }
+
         [Required]
         [Column("phone")]
         [Length(12, 12)]
@@ -23,10 +26,17 @@ namespace hms.Models
         public DateOnly? DateBirth { get; set; }
     }
 
-    public record PatientDto
+    public record PatientDtoNew
     {
         public required string Phone { get; set; }
         public required string Name { get; set; }
         public required DateOnly DateBirth { get; set; }
+    }
+
+    public record PatientDtoPatch
+    {
+        public string? Phone { get; set; }
+        public string? Name { get; set; }
+        public DateOnly? DateBirth { get; set; }
     }
 }

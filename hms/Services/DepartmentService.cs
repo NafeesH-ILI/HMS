@@ -1,5 +1,6 @@
 ﻿using hms.Repos;
 using hms.Models;
+using AutoMapper;
 
 namespace hms.Services
 {
@@ -15,9 +16,11 @@ namespace hms.Services
     }
     public class DepartmentService(
         DbCtx ctx,
+        IMapper mapper,
         IDepartmentRepository deptRepo) : IDepartmentService
     {
         private readonly DbCtx _ctx = ctx;
+        private readonly IMapper _mapper = mapper;
         private readonly IDepartmentRepository _deptRepo = deptRepo;
 
         public async Task<int> Count()
@@ -42,11 +45,7 @@ namespace hms.Services
 
         public async Task<Department> Add(DepartmentDtoNew dept)
         {
-            Department d = new()
-            {
-                UName = dept.UName,
-                Name = dept.Name,
-            };
+            Department d = _mapper.Map<Department>(dept);
             await _deptRepo.Add(d);
             return d;
         }
@@ -55,8 +54,8 @@ namespace hms.Services
         {
             if (!await ExistsByUName(uname))
                 throw new ErrNotFound();
-            Department d = await GetByUName(uname);
-            d.Name = dept.Name;
+            Department d = _mapper.Map<Department>(dept);
+            d.UName = uname;
             await _deptRepo.Update(d);
         }
 

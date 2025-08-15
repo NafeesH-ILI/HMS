@@ -50,7 +50,7 @@ namespace hms.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Patient>> Post(PatientDto patientDto)
+        public async Task<ActionResult<Patient>> Post(PatientDtoNew patientDto)
         {
             Patient patient = await _patientService.Add(patientDto);
             return CreatedAtRoute("GetPatientByPhoneName",
@@ -59,7 +59,7 @@ namespace hms.Controllers
         }
 
         [HttpPut("{phone}/{name}")]
-        public async Task<ActionResult> Put(string phone, string name, PatientDto patient)
+        public async Task<ActionResult> Put(string phone, string name, PatientDtoNew patient)
         {
             await _patientService.Update(phone, name, patient);
             return Ok();

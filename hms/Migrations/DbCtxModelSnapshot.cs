@@ -77,19 +77,24 @@ namespace hms.Migrations
 
             modelBuilder.Entity("hms.Models.Patient", b =>
                 {
-                    b.Property<string>("Phone")
-                        .HasColumnType("text")
-                        .HasColumnName("phone");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
+                    b.Property<string>("UName")
+                        .HasColumnType("text");
 
                     b.Property<DateOnly>("DateBirth")
                         .HasColumnType("date")
                         .HasColumnName("dob");
 
-                    b.HasKey("Phone", "Name");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("phone");
+
+                    b.HasKey("UName");
 
                     b.ToTable("patients");
                 });
