@@ -1,14 +1,16 @@
-﻿using hms.Models;
-using hms.Repos;
-using hms.Services;
+﻿using hms.Common;
+using hms.Models;
+using hms.Models.DTOs;
+using hms.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace hms.Controllers
 {
     [ApiController]
     [Route("/api/v2/departments")]
     [ErrorHandler]
+    [Authorize]
     public class DepartmentsController(
         ILogger<DepartmentsController> logger,
         IDepartmentService deptService) : ControllerBase
@@ -17,6 +19,7 @@ namespace hms.Controllers
         private readonly IDepartmentService _deptService = deptService;
 
         [HttpGet]
+        [Authorize(Roles = Roles.Anyone)]
         public async Task<ActionResult<IAsyncEnumerable<Department>>> GetAll(int page=1, int page_size=10)
         {
             var count = await _deptService.Count();
@@ -30,12 +33,14 @@ namespace hms.Controllers
         }
 
         [HttpGet("{uname}", Name="GetDepartmentByUName")]
+        [Authorize(Roles = Roles.Anyone)]
         public async Task<ActionResult<Department>> Get(string uname)
         {
             return Ok(await _deptService.GetByUName(uname));
         }
 
         [HttpGet("{uname}/doctors")]
+        [Authorize(Roles = Roles.Anyone)]
         public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetDoctorsOfDept(string uname, int page = 1, int page_size = 10)
         {
             Department department = await _deptService.GetByUName(uname);
@@ -47,6 +52,7 @@ namespace hms.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<Department>> Post(DepartmentDtoNew department)
         {
             Department d = await _deptService.Add(department);
@@ -54,6 +60,7 @@ namespace hms.Controllers
         }
 
         [HttpPut("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Put(string uname, DepartmentDtoPut department)
         {
             await _deptService.Update(uname, department);
@@ -61,6 +68,7 @@ namespace hms.Controllers
         }
 
         [HttpDelete("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Delete(string uname)
         {
             await _deptService.Delete(uname);

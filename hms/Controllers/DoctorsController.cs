@@ -1,15 +1,16 @@
-﻿using hms.Models;
-using hms.Repos;
-using hms.Services;
+﻿using hms.Common;
+using hms.Models;
+using hms.Models.DTOs;
+using hms.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace hms.Controllers
 {
     [ApiController]
     [Route("/api/v2/doctors")]
     [ErrorHandler]
+    [Authorize]
     public class DoctorsController(
         ILogger<DoctorsController> logger,
         IDoctorService doctorService) : ControllerBase
@@ -18,6 +19,7 @@ namespace hms.Controllers
         private readonly IDoctorService _doctorService = doctorService;
 
         [HttpGet]
+        [Authorize(Roles = Roles.Anyone)]
         public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetAll(int page=1, int page_size=10)
         {
             var count = await _doctorService.Count();
@@ -31,12 +33,14 @@ namespace hms.Controllers
         }
 
         [HttpGet("{uname}", Name="GetDoctorByUName")]
+        [Authorize(Roles = Roles.Anyone)]
         public async Task<ActionResult<Doctor>> Get(string uname)
         {
             return Ok(await _doctorService.GetByUName(uname));
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<Doctor>> Post(DoctorDtoNew doctor)
         {
             Doctor d = await _doctorService.Add(doctor);
@@ -44,6 +48,7 @@ namespace hms.Controllers
         }
 
         [HttpPut("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Put(string uname, DoctorDtoNew doctor)
         {
             await _doctorService.Update(uname, doctor);
@@ -51,6 +56,7 @@ namespace hms.Controllers
         }
 
         [HttpPatch("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Patch(string uname, DoctorDtoPatch doctor)
         {
             await _doctorService.Update(uname, doctor);
@@ -58,6 +64,7 @@ namespace hms.Controllers
         }
 
         [HttpDelete("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Delete(string uname)
         {
             await _doctorService.Delete(uname);

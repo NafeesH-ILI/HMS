@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace hms.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class PatientsKeyUName : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,6 +21,20 @@ namespace hms.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_departments", x => x.uname);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "patients",
+                columns: table => new
+                {
+                    UName = table.Column<string>(type: "text", nullable: false),
+                    phone = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    dob = table.Column<DateOnly>(type: "date", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_patients", x => x.UName);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,6 +82,9 @@ namespace hms.Migrations
         {
             migrationBuilder.DropTable(
                 name: "doctors");
+
+            migrationBuilder.DropTable(
+                name: "patients");
 
             migrationBuilder.DropTable(
                 name: "unames");

@@ -1,7 +1,12 @@
-using hms;
+using hms.Common;
 using hms.Models;
+using hms.Models.DTOs;
 using hms.Repos;
+using hms.Repos.Interfaces;
 using hms.Services;
+using hms.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,9 +23,12 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(config => {
-    config.CreateMap<PatientDto, Patient>();
+    config.CreateMap<PatientDtoNew, Patient>();
+    config.CreateMap<PatientDtoPatch, Patient>()
+        .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DoctorDtoNew, Doctor>();
-    config.CreateMap<DoctorDtoPatch, Doctor>();
+    config.CreateMap<DoctorDtoPatch, Doctor>()
+        .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DepartmentDtoNew, Department>();
     config.CreateMap<DepartmentDtoPut, Department>();
 });
@@ -29,15 +37,33 @@ builder.Services.AddAutoMapper(config => {
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // register services
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IUNameService, UNameService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // db ctx pool
 builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(DbCtx.ConnStr));
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.SlidingExpiration = true;
+        options.AccessDeniedPath = "/Forbidden/";
+    });
+
+builder.Services
+    .AddAuthorization(options =>
+    {
+        /*foreach (User.Types role in Enum.GetValues<User.Types>())
+        {
+                options.AddPolicy(role.ToString(), policy => policy.RequireRole(role.ToString()));
+        }*/
+    });
 
 // finally build as WebApplication from this WebApplicationBuilder
 // this is where thhose appsettings.json etc get read
@@ -56,7 +82,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // authorization middleware. we not using it right now, so does not matter
-//app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Maps controllers to the routes defined using [Route] and [HttpGet/Post/Etc]
 // If not done, swagger sees the endpoints, but they are not exposed. All return 404

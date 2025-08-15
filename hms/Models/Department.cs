@@ -16,20 +16,10 @@ namespace hms.Models
         [MaxLength(100)]
         [MinLength(2)]
         [Required]
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         [InverseProperty("dept")]
         [JsonIgnore]
         public ICollection<Doctor> Doctors { get; set; } = [];
-    }
-
-    public record DepartmentDtoNew
-    {
-        public required string UName { get; set; }
-        public required string Name { get; set; }
-    }
-    public record DepartmentDtoPut
-    {
-        public required string Name { get; set; }
     }
 }

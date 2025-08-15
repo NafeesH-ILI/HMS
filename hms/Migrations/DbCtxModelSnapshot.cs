@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using hms;
+using hms.Common;
 
 #nullable disable
 
@@ -77,19 +77,24 @@ namespace hms.Migrations
 
             modelBuilder.Entity("hms.Models.Patient", b =>
                 {
-                    b.Property<string>("Phone")
-                        .HasColumnType("text")
-                        .HasColumnName("phone");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
+                    b.Property<string>("UName")
+                        .HasColumnType("text");
 
                     b.Property<DateOnly>("DateBirth")
                         .HasColumnType("date")
                         .HasColumnName("dob");
 
-                    b.HasKey("Phone", "Name");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("phone");
+
+                    b.HasKey("UName");
 
                     b.ToTable("patients");
                 });
@@ -111,6 +116,34 @@ namespace hms.Migrations
                     b.HasKey("Name", "Table");
 
                     b.ToTable("unames");
+                });
+
+            modelBuilder.Entity("hms.Models.User", b =>
+                {
+                    b.Property<string>("UName")
+                        .HasColumnType("text")
+                        .HasColumnName("uname");
+
+                    b.Property<string>("PassHash")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("pass");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
+
+                    b.HasKey("UName");
+
+                    b.ToTable("users");
+
+                    b.HasData(
+                        new
+                        {
+                            UName = "sudo",
+                            PassHash = "abcd",
+                            Type = 0
+                        });
                 });
 
             modelBuilder.Entity("hms.Models.Doctor", b =>

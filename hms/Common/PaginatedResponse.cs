@@ -1,4 +1,4 @@
-﻿namespace hms
+﻿namespace hms.Common
 {
     public class PaginatedResponse<T>
     {

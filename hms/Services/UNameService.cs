@@ -1,14 +1,9 @@
-﻿using hms.Models;
+﻿using hms.Common;
+using hms.Models;
+using hms.Services.Interfaces;
 
 namespace hms.Services
 {
-    public interface IUNameService
-    {
-        public string UNameOf(string fullName);
-
-        public string Generate(string table, string fullName);
-    }
-
     public class UNameService(DbCtx ctx) : IUNameService
     {
         private readonly DbCtx _ctx = ctx;

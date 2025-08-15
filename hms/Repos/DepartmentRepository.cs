@@ -1,25 +1,10 @@
-﻿using hms.Models;
+﻿using hms.Common;
+using hms.Models;
+using hms.Repos.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Data.SqlTypes;
 
 namespace hms.Repos
 {
-    public interface IDepartmentRepository
-    {
-        public Task<int> Count();
-
-        public Task<Department?> GetByUName(string uname);
-
-        public Task<bool> ExistsByUName(string uname);
-
-        public Task<IList<Department>> Get(int page = 1, int pageSize = 10);
-
-        public Task Add(Department dept);
-
-        public Task Update(Department dept);
-        
-        public Task Delete(Department depart);
-    }
     public class DepartmentRepository(DbCtx ctx) : IDepartmentRepository
     {
         private readonly DbCtx _ctx = ctx;

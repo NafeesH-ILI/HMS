@@ -1,23 +1,19 @@
-﻿using hms.Repos;
-using hms.Models;
+﻿using hms.Models;
+using hms.Models.DTOs;
+using hms.Repos.Interfaces;
+using hms.Services.Interfaces;
+using AutoMapper;
+using hms.Common;
 
 namespace hms.Services
 {
-    public interface IDepartmentService
-    {
-        public Task<int> Count();
-        public Task<Department> GetByUName(string uname);
-        public Task<bool> ExistsByUName(string uname);
-        public Task<IList<Department>> Get(int page = 1, int pageSize = 10);
-        public Task<Department> Add(DepartmentDtoNew dept);
-        public Task Update(string uname, DepartmentDtoPut dept);
-        public Task Delete(string uname);
-    }
     public class DepartmentService(
         DbCtx ctx,
+        IMapper mapper,
         IDepartmentRepository deptRepo) : IDepartmentService
     {
         private readonly DbCtx _ctx = ctx;
+        private readonly IMapper _mapper = mapper;
         private readonly IDepartmentRepository _deptRepo = deptRepo;
 
         public async Task<int> Count()
@@ -42,11 +38,7 @@ namespace hms.Services
 
         public async Task<Department> Add(DepartmentDtoNew dept)
         {
-            Department d = new()
-            {
-                UName = dept.UName,
-                Name = dept.Name,
-            };
+            Department d = _mapper.Map<Department>(dept);
             await _deptRepo.Add(d);
             return d;
         }
@@ -55,8 +47,8 @@ namespace hms.Services
         {
             if (!await ExistsByUName(uname))
                 throw new ErrNotFound();
-            Department d = await GetByUName(uname);
-            d.Name = dept.Name;
+            Department d = _mapper.Map<Department>(dept);
+            d.UName = uname;
             await _deptRepo.Update(d);
         }
 

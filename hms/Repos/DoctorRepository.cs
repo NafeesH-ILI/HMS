@@ -1,27 +1,11 @@
-﻿using hms.Models;
-using hms.Services;
+﻿using hms.Common;
+using hms.Models;
+using hms.Repos.Interfaces;
+using hms.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Data.SqlTypes;
 
 namespace hms.Repos
 {
-    public interface IDoctorRepository
-    {
-        public Task<int> Count();
-        public Task<int> Count(string fmt);
-
-        public Task<Doctor?> GetByUName(string uname);
-
-        public Task<bool> ExistsByUName(string uname);
-
-        public Task<IList<Doctor>> Get(int page = 1, int pageSize = 10);
-
-        public Task Add(Doctor doctor);
-
-        public Task Update(Doctor doctor);
-        
-        public Task Delete(Doctor doctor);
-    }
     public class DoctorRepository (IUNameService namer, DbCtx ctx) : IDoctorRepository
     {
         private readonly IUNameService _namer = namer;
