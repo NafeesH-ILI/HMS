@@ -19,6 +19,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(config => {
     config.CreateMap<PatientDtoNew, Patient>();
+    config.CreateMap<PatientDtoPatch, Patient>()
+        .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DoctorDtoNew, Doctor>();
     config.CreateMap<DoctorDtoPatch, Doctor>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));

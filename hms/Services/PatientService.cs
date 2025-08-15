@@ -7,44 +7,35 @@ namespace hms.Services
     public interface IPatientService
     {
         public Task<int> Count();
-        public Task<int> CountByPhone(string phone);
-        public Task<IList<Patient>> GetByPhone(string phone, int page = 1, int pageSize = 10);
-        public Task<Patient> GetByPhoneName(string phone, string name);
-        public Task<bool> ExistsByPhoneName(string phone, string name);
+        public Task<Patient> GetByUName(string uname);
+        public Task<bool> ExistsByUName(string uname);
         public Task<IList<Patient>> Get(int page = 1, int pageSize = 10);
         public Task<Patient> Add(PatientDtoNew patient);
-        public Task Update(string phone, string name, PatientDtoNew patientDto);
-        public Task Delete(string phone, string name);
+        public Task Update(string uname, PatientDtoNew patientDto);
+        public Task Update(string uname, PatientDtoPatch patientDto);
+        public Task Delete(string uname);
     }
     public class PatientService(
         IPatientRepository patientRepo,
+        IUNameService namer,
         IMapper mapper) : IPatientService
     {
         private readonly IPatientRepository _patientRepo = patientRepo;
+        private readonly IUNameService _namer = namer;
         private readonly IMapper _mapper = mapper;
         public async Task<int> Count()
         {
             return await _patientRepo.Count();
         }
 
-        public async Task<int> CountByPhone(string phone)
+        public async Task<Patient> GetByUName(string uname)
         {
-            return await _patientRepo.CountByPhone(phone);
+            return await _patientRepo.GetByUName(uname) ?? throw new ErrNotFound();
         }
 
-        public async Task<IList<Patient>> GetByPhone(string phone, int page = 1, int pageSize = 10)
+        public async Task<bool> ExistsByUName(string uname)
         {
-            return await _patientRepo.GetByPhone(phone, page, pageSize);
-        }
-
-        public async Task<Patient> GetByPhoneName(string phone, string name)
-        {
-            return await _patientRepo.GetByPhoneName(phone, name) ?? throw new ErrNotFound();
-        }
-
-        public async Task<bool> ExistsByPhoneName(string phone, string name)
-        {
-            return await _patientRepo.ExistsByPhoneName(phone, name);
+            return await _patientRepo.ExistsByUName(uname);
         }
         
         public async Task<IList<Patient>> Get(int page = 1, int pageSize = 10)
@@ -55,23 +46,28 @@ namespace hms.Services
         public async Task<Patient> Add(PatientDtoNew patientDto)
         {
             Patient p = _mapper.Map<Patient>(patientDto);
+            p.UName = _namer.Generate("persons", p.Name);
             await _patientRepo.Add(p);
             return p;
         }
 
-        public async Task Update(string phone, string name, PatientDtoNew patientDto)
+        public async Task Update(string uname, PatientDtoNew patientDto)
         {
-            Patient p = await GetByPhoneName(phone, name);
+            Patient p = await GetByUName(uname);
             _mapper.Map(patientDto, p);
-            p.Phone = patientDto.Phone;
-            p.Name = patientDto.Name;
-            p.DateBirth = patientDto.DateBirth;
             await _patientRepo.Update(p);
         }
 
-        public async Task Delete(string phone, string name)
+        public async Task Update(string uname, PatientDtoPatch patientDto)
         {
-            await _patientRepo.Delete(await _patientRepo.GetByPhoneName(phone, name) ?? throw new ErrNotFound());
+            Patient p = await GetByUName(uname);
+            _mapper.Map(patientDto, p);
+            await _patientRepo.Update(p);
+        }
+
+        public async Task Delete(string uname)
+        {
+            await _patientRepo.Delete(await _patientRepo.GetByUName(uname) ?? throw new ErrNotFound());
         }
     }
 }

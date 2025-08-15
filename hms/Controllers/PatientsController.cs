@@ -30,45 +30,39 @@ namespace hms.Controllers
             });
         }
 
-        [HttpGet("{phone}/{name}", Name = "GetPatientByPhoneName")]
-        public async Task<ActionResult<Patient>> Get(string phone, string name)
+        [HttpGet("{uname}", Name = "GetPatientByUName")]
+        public async Task<ActionResult<Patient>> Get(string uname)
         {
-            return Ok(await _patientService.GetByPhoneName(phone, name));
-        }
-
-        [HttpGet("{phone}")]
-        public async Task<ActionResult<IEnumerable<Patient>>> GetByPhone(string phone, int page = 1, int page_size=10)
-        {
-            int count = await _patientService.CountByPhone(phone);
-            if (count == 0)
-                return NoContent();
-            return Ok(new PaginatedResponse<IList<Patient>>
-            {
-                Count = count,
-                Value = await _patientService.GetByPhone(phone, page, page_size)
-            });
+            return Ok(await _patientService.GetByUName(uname));
         }
 
         [HttpPost]
         public async Task<ActionResult<Patient>> Post(PatientDtoNew patientDto)
         {
             Patient patient = await _patientService.Add(patientDto);
-            return CreatedAtRoute("GetPatientByPhoneName",
-                new {phone = patient.Phone, name = patient.Name},
+            return CreatedAtRoute("GetPatientByUName",
+                new {uname = patient.UName},
                 patient);
         }
 
-        [HttpPut("{phone}/{name}")]
-        public async Task<ActionResult> Put(string phone, string name, PatientDtoNew patient)
+        [HttpPut("{uname}")]
+        public async Task<ActionResult> Put(string uname, PatientDtoNew patient)
         {
-            await _patientService.Update(phone, name, patient);
+            await _patientService.Update(uname, patient);
             return Ok();
         }
 
-        [HttpDelete("{phone}/{name}")]
-        public async Task<ActionResult> Delete(string phone, string name)
+        [HttpPatch("{uname}")]
+        public async Task<ActionResult> Put(string uname, PatientDtoPatch patient)
         {
-            await _patientService.Delete(phone, name);
+            await _patientService.Update(uname, patient);
+            return Ok();
+        }
+
+        [HttpDelete("{uname}")]
+        public async Task<ActionResult> Delete(string uname)
+        {
+            await _patientService.Delete(uname);
             return Ok();
         }
     }
