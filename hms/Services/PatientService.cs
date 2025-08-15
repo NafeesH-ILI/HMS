@@ -1,4 +1,5 @@
-﻿using hms.Models;
+﻿using hms.Common;
+using hms.Models;
 using hms.Models.DTOs;
 using hms.Repos.Interfaces;
 using hms.Services.Interfaces;

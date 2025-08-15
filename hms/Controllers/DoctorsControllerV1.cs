@@ -1,6 +1,8 @@
-﻿using hms.Models;
+﻿using hms.Common;
+using hms.Models;
 using hms.Models.DTOs;
 using hms.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
@@ -8,6 +10,7 @@ namespace hms.Controllers
 {
     [ApiController]
     [Route("/api/v1/doctors")]
+    [Authorize]
     public class DoctorsControllerV1(
         ILogger<DoctorsControllerV1> logger,
         IUNameService namer) : ControllerBase
@@ -17,6 +20,7 @@ namespace hms.Controllers
         private readonly NpgsqlDataSource db = NpgsqlDataSource.Create(DbCtx.ConnStr)!;
 
         [HttpGet]
+        [Authorize(Roles = Roles.Anyone)]
         public async Task<ActionResult<IAsyncEnumerable<Doctor>>> GetAll(int page = 1, int page_size = 10, string? fmt=null)
         {
             if (page <= 0)
@@ -60,6 +64,7 @@ namespace hms.Controllers
         }
 
         [HttpGet("{uname}", Name = "GetDoctorV1ByUName")]
+        [Authorize(Roles = Roles.Anyone)]
         public async Task<ActionResult<Doctor>> Get(string uname)
         {
             try
@@ -88,6 +93,7 @@ namespace hms.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Post(DoctorDtoNew doctor)
         {
             Doctor d = new() {
@@ -137,6 +143,7 @@ namespace hms.Controllers
         }
 
         [HttpPut("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Put(string uname, DoctorDtoNew doctor)
         {
             try
@@ -170,6 +177,7 @@ namespace hms.Controllers
         }
 
         [HttpPatch("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Patch(string uname, DoctorDtoPatch doctor)
         {
             Doctor? curr = (await Get(uname)).Value;
@@ -214,6 +222,7 @@ namespace hms.Controllers
         }
 
         [HttpDelete("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Delete(string uname)
         {
             await using var cmd = db.CreateCommand("DELETE FROM doctors WHERE uname=@uname");

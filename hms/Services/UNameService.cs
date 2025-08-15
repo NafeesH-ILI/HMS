@@ -1,4 +1,5 @@
-﻿using hms.Models;
+﻿using hms.Common;
+using hms.Models;
 using hms.Services.Interfaces;
 
 namespace hms.Services

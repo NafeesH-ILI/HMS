@@ -1,4 +1,5 @@
-﻿using hms.Models;
+﻿using hms.Common;
+using hms.Models;
 using hms.Repos.Interfaces;
 using hms.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;

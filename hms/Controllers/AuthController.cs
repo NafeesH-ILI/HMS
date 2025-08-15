@@ -1,4 +1,5 @@
-﻿using hms.Models;
+﻿using hms.Common;
+using hms.Models;
 using hms.Models.DTOs;
 using hms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -52,8 +53,8 @@ namespace hms.Controllers
         {
             return new WhoAmI
             {
-                Role = User.FindFirst(ClaimTypes.Role)!.Value,
-                UName = User.Identity!.Name!
+                Role = User.FindFirst(ClaimTypes.Role)?.Value,
+                UName = User.Identity?.Name
             };
         }
     }

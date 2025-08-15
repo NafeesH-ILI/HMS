@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System.Data.SqlTypes;
 using System.Net.Http.Headers;
 
-namespace hms
+namespace hms.Common
 {
     public class ErrorHandlerAttribute : ExceptionFilterAttribute
     {

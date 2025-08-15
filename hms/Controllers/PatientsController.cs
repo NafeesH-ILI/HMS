@@ -1,6 +1,8 @@
-﻿using hms.Models;
+﻿using hms.Common;
+using hms.Models;
 using hms.Models.DTOs;
 using hms.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hms.Controllers
@@ -8,6 +10,7 @@ namespace hms.Controllers
     [ApiController]
     [Route("/api/v2/patients")]
     [ErrorHandler]
+    [Authorize]
     public class PatientsController(
         ILogger<PatientsController> logger,
         IPatientService patientService) : ControllerBase
@@ -16,6 +19,7 @@ namespace hms.Controllers
         private readonly IPatientService _patientService = patientService;
 
         [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<IAsyncEnumerable<Patient>>> GetAll(int page = 1, int page_size = 10)
         {
             var count = await _patientService.Count();
@@ -29,12 +33,14 @@ namespace hms.Controllers
         }
 
         [HttpGet("{uname}", Name = "GetPatientByUName")]
+        [Authorize(Roles = Roles.AnyoneButPatient)]
         public async Task<ActionResult<Patient>> Get(string uname)
         {
             return Ok(await _patientService.GetByUName(uname));
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.Receptionist)]
         public async Task<ActionResult<Patient>> Post(PatientDtoNew patientDto)
         {
             Patient patient = await _patientService.Add(patientDto);
@@ -44,6 +50,7 @@ namespace hms.Controllers
         }
 
         [HttpPut("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Put(string uname, PatientDtoNew patient)
         {
             await _patientService.Update(uname, patient);
@@ -51,13 +58,15 @@ namespace hms.Controllers
         }
 
         [HttpPatch("{uname}")]
-        public async Task<ActionResult> Put(string uname, PatientDtoPatch patient)
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<ActionResult> Patch(string uname, PatientDtoPatch patient)
         {
             await _patientService.Update(uname, patient);
             return Ok();
         }
 
         [HttpDelete("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> Delete(string uname)
         {
             await _patientService.Delete(uname);

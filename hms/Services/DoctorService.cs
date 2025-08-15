@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using hms.Common;
+using AutoMapper;
 using hms.Models;
 using hms.Models.DTOs;
 using hms.Repos.Interfaces;

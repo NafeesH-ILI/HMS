@@ -1,7 +1,7 @@
 ﻿using hms.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace hms
+namespace hms.Common
 {
     public class DbCtx : DbContext
     {

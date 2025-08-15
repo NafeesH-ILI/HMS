@@ -1,6 +1,7 @@
 ﻿using hms.Repos.Interfaces;
 using hms.Models;
 using Microsoft.EntityFrameworkCore;
+using hms.Common;
 
 namespace hms.Repos
 {

@@ -2,7 +2,7 @@
 {
     public class WhoAmI
     {
-        public required string UName { get; set; }
-        public required string Role { get; set; }
+        public string? UName { get; set; }
+        public string? Role { get; set; }
     }
 }

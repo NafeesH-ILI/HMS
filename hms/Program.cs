@@ -1,4 +1,4 @@
-using hms;
+using hms.Common;
 using hms.Models;
 using hms.Models.DTOs;
 using hms.Repos;
@@ -59,8 +59,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services
     .AddAuthorization(options =>
     {
-        foreach (User.Types role in Enum.GetValues<User.Types>())
-            options.AddPolicy(role.ToString(), policy => policy.RequireRole(role.ToString()));
+        /*foreach (User.Types role in Enum.GetValues<User.Types>())
+        {
+                options.AddPolicy(role.ToString(), policy => policy.RequireRole(role.ToString()));
+        }*/
     });
 
 // finally build as WebApplication from this WebApplicationBuilder
