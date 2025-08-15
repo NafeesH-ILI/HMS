@@ -1,25 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace hms.Models
 {
-    [Table("departments")]
-    public class Department
+    [Table("users")]
+    public class User
     {
+        enum Types 
+        {
+            SuperAdmin,
+            Admin,
+            Receptionist,
+            Doctor,
+            Patient
+        }
+
         [Column("uname")]
-        [Key]
-        [Required]
         public required string UName { get; set; }
 
         [Column("name")]
-        [MaxLength(100)]
-        [MinLength(2)]
-        [Required]
         public required string Name { get; set; }
 
-        [InverseProperty("dept")]
+        [Column("pass_hash")]
         [JsonIgnore]
-        public ICollection<Doctor> Doctors { get; set; } = [];
+        public required string PassHash { get; set; }
     }
 }

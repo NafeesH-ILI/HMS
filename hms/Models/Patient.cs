@@ -21,6 +21,6 @@ namespace hms.Models
 
         [Required]
         [Column("dob")]
-        public DateOnly? DateBirth { get; set; }
+        public required DateOnly DateBirth { get; set; }
     }
 }
