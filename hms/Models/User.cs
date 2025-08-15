@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace hms.Models
@@ -16,6 +17,7 @@ namespace hms.Models
         }
 
         [Column("uname")]
+        [Key]
         public required string UName { get; set; }
 
         [Column("type")]
