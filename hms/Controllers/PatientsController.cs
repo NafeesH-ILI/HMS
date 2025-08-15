@@ -1,9 +1,6 @@
 ﻿using hms.Models;
-using hms.Repos;
-using hms.Services;
+using hms.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 namespace hms.Controllers
 {

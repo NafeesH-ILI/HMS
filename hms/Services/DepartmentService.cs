@@ -1,19 +1,11 @@
 ﻿using hms.Repos;
 using hms.Models;
+using hms.Repos.Interfaces;
+using hms.Services.Interfaces;
 using AutoMapper;
 
 namespace hms.Services
 {
-    public interface IDepartmentService
-    {
-        public Task<int> Count();
-        public Task<Department> GetByUName(string uname);
-        public Task<bool> ExistsByUName(string uname);
-        public Task<IList<Department>> Get(int page = 1, int pageSize = 10);
-        public Task<Department> Add(DepartmentDtoNew dept);
-        public Task Update(string uname, DepartmentDtoPut dept);
-        public Task Delete(string uname);
-    }
     public class DepartmentService(
         DbCtx ctx,
         IMapper mapper,

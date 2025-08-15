@@ -1,20 +1,10 @@
 ﻿using hms.Models;
+using hms.Repos.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Data.SqlTypes;
 
 namespace hms.Repos
 {
-    public interface IPatientRepository
-    {
-        public Task<int> Count();
-        public Task<Patient?> GetByUName(string uname);
-        public Task<bool> ExistsByUName(string uname);
-        public Task<IList<Patient>> Get(int page = 1, int pageSize = 10);
-        public Task Add(Patient patient);
-        public Task Update(Patient patient);
-        public Task Delete(Patient patient);
-    }
-    
     public class PatientRepository(DbCtx ctx) : IPatientRepository
     {
         private readonly DbCtx _ctx = ctx;

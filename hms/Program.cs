@@ -1,7 +1,9 @@
 using hms;
 using hms.Models;
 using hms.Repos;
+using hms.Repos.Interfaces;
 using hms.Services;
+using hms.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
