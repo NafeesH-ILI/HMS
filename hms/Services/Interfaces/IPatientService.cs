@@ -1,4 +1,5 @@
 ﻿using hms.Models;
+using hms.Models.DTOs;
 
 namespace hms.Services.Interfaces
 {

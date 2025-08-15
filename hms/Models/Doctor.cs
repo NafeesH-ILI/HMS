@@ -37,18 +37,4 @@ namespace hms.Models
         public Department Dept { get; set; } = null!;
     }
   
-    public record DoctorDtoNew
-    {
-        public required string Name { get; set; }
-        public required string MaxQualification { get; set; }
-        public required string Specialization { get; set; }
-        public required string DeptKey { get; set; }
-    }
-    public record DoctorDtoPatch
-    {
-        public string? Name { get; set; }
-        public string? MaxQualification { get; set; }
-        public string? Specialization { get; set; }
-        public string? DeptKey { get; set; }
-    }
 }

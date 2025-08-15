@@ -1,10 +1,8 @@
 ﻿using hms.Models;
-using hms.Services;
+using hms.Models.DTOs;
+using hms.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using System.Threading.Tasks;
 
 namespace hms.Controllers
 {

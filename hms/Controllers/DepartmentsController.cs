@@ -1,4 +1,5 @@
 ﻿using hms.Models;
+using hms.Models.DTOs;
 using hms.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
