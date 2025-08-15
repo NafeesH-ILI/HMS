@@ -10,9 +10,17 @@ namespace hms
         public DbSet<Department> Departments { get; set; }
         public DbSet<UName> UNames { get; set; }
         public DbSet<Patient> Patients { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public DbCtx() { }
         public DbCtx(DbContextOptions<DbCtx> options) : base(options) { }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<User>().HasData(
+                new User { Type = User.Types.SuperAdmin, PassHash = "abcd", UName = "sudo"});
+        }
 
         /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -6,7 +6,7 @@ namespace hms.Models
     [Table("users")]
     public class User
     {
-        enum Types 
+        public enum Types : int
         {
             SuperAdmin,
             Admin,
@@ -18,10 +18,10 @@ namespace hms.Models
         [Column("uname")]
         public required string UName { get; set; }
 
-        [Column("name")]
-        public required string Name { get; set; }
+        [Column("type")]
+        public required Types Type { get; set; }
 
-        [Column("pass_hash")]
+        [Column("pass")]
         [JsonIgnore]
         public required string PassHash { get; set; }
     }
