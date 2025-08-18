@@ -36,6 +36,9 @@ namespace hms.Models
         [ForeignKey("DeptKey")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Department Dept { get; set; } = null!;
+
+        [ForeignKey("UName")]
+        public User User { get; set; } = null!;
     }
   
 }
