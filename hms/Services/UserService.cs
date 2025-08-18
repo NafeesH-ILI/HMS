@@ -67,7 +67,7 @@ namespace hms.Services
 
         public async Task<User> Add(string name, User.Types type, string? password = null)
         {
-            password ??= RandomPass.RandomPassword();
+            password ??= RandomPass.Password();
             User user = new()
             {
                 UName = _namer.Generate(name),

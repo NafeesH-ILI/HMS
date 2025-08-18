@@ -4,10 +4,8 @@ namespace hms.Utils
 {
     public static class RandomPass
     {
-        public static string RandomPassword(int length = 20)
+        private static string Generate(string pool, int length)
         {
-            string pool = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM" +
-                "1234567890" + "~!@#$%^&*()_+-=[]{};:,./<>?";
             StringBuilder password = new();
             Random random = new();
             for (int i = 0; i < length; i++)
@@ -15,6 +13,18 @@ namespace hms.Utils
                 password.Append(pool[random.Next(pool.Length)]);
             }
             return password.ToString();
+        }
+
+        public static string Password(int length = 20)
+        {
+            string pool = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM" +
+                "1234567890" + "~!@#$%^&*()_+-=[]{};:,./<>?";
+            return Generate(pool, length);
+        }
+
+        public static string OTP(int length = 10)
+        {
+            return Generate("0123456789", length);
         }
     }
 }
