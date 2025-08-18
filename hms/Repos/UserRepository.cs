@@ -59,7 +59,8 @@ namespace hms.Repos
         
         public async Task Add(User user)
         {
-            await _ctx.Users.AddAsync(user);
+            _ctx.Users.Add(user);
+            await _ctx.SaveChangesAsync();
         }
 
         public async Task Update(User user)

@@ -1,4 +1,5 @@
 ﻿using hms.Models;
+using hms.Models.DTOs;
 
 namespace hms.Services.Interfaces
 {
@@ -10,7 +11,7 @@ namespace hms.Services.Interfaces
         public Task<IList<User>> GetByType(User.Types type, int page = 1, int pageSize = 10);
         public Task<bool> ExistsByUName(string uname);
         public Task<User> GetByUName(string uname);
-        public Task Add(User user);
+        public Task Add(UserDtoNew user);
         public Task Update(User user);
         public Task Delete(User user);
         public Task<bool> Authenticate(string uname, string password);

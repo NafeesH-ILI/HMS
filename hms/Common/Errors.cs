@@ -29,8 +29,7 @@ namespace hms.Common
     }
 
     public class ErrNotFound() : Exception { }
-
     public class ErrBadReq() : Exception { }
-
     public class ErrBadPagination() : Exception { }
+    public class ErrAlreadyExists() : Exception { }
 }

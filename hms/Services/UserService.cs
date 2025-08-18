@@ -1,13 +1,17 @@
-﻿using hms.Common;
+﻿using AutoMapper;
+using hms.Common;
 using hms.Models;
+using hms.Models.DTOs;
 using hms.Repos.Interfaces;
 using hms.Services.Interfaces;
 
 namespace hms.Services
 {
     public class UserService(
+        IMapper mapper,
         IUserRepository userRepo) : IUserService
     {
+        private readonly IMapper _mapper = mapper;
         private readonly IUserRepository _userRepo = userRepo;
         public async Task<int> Count()
         {
@@ -33,9 +37,12 @@ namespace hms.Services
         {
             return await _userRepo.GetByUName(uname) ?? throw new ErrNotFound();
         }
-        public async Task Add(User user)
+        public async Task Add(UserDtoNew userNew)
         {
-            // TODO: hash the password
+            User user = _mapper.Map<User>(userNew);
+            user.PassHash = userNew.Password; // TODO: hash the password
+            if (await ExistsByUName(user.UName))
+                throw new ErrAlreadyExists();
             await _userRepo.Add(user);
         }
         public async Task Update(User user)

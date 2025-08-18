@@ -47,6 +47,14 @@ namespace hms.Controllers
             return Ok();
         }
 
+        [HttpPost("register")]
+        [Authorize(Roles = Roles.SuperAdmin)]
+        public async Task<IActionResult> Register(UserDtoNew userNew)
+        {
+            await _userService.Add(userNew);
+            return Ok();
+        }
+
         [HttpGet("whoami")]
         [Authorize]
         public WhoAmI WhoAmI()

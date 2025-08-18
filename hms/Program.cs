@@ -31,6 +31,7 @@ builder.Services.AddAutoMapper(config => {
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DepartmentDtoNew, Department>();
     config.CreateMap<DepartmentDtoPut, Department>();
+    config.CreateMap<UserDtoNew, User>();
 });
 
 // register repos
