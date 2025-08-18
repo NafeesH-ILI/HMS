@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 using System.Data.SqlTypes;
 using System.Net.Http.Headers;
 
@@ -17,9 +18,15 @@ namespace hms.Common
             }
             else if (ctx.Exception is ErrBadReq ||
                 ctx.Exception is SqlTypeException ||
-                ctx.Exception is ErrBadPagination)
+                ctx.Exception is DbUpdateException ||
+                ctx.Exception is ErrBadPagination ||
+                ctx.Exception is ArgumentException)
             {
                 ctx.Result = new BadRequestResult();
+            }
+            else if (ctx.Exception is ErrUnauthorized)
+            {
+                ctx.Result = new UnauthorizedResult();
             }
             else
             {
@@ -32,4 +39,5 @@ namespace hms.Common
     public class ErrBadReq() : Exception { }
     public class ErrBadPagination() : Exception { }
     public class ErrAlreadyExists() : Exception { }
+    public class ErrUnauthorized() : Exception { }
 }

@@ -32,6 +32,7 @@ builder.Services.AddAutoMapper(config => {
     config.CreateMap<DepartmentDtoNew, Department>();
     config.CreateMap<DepartmentDtoPut, Department>();
     config.CreateMap<UserDtoNew, User>();
+    config.CreateMap<User, UserDtoGet>();
 });
 
 // register repos
@@ -52,7 +53,7 @@ builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(DbCtx.Conn
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options => {
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
         options.SlidingExpiration = true;
         options.AccessDeniedPath = "/Forbidden/";
     });
