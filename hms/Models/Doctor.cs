@@ -38,6 +38,7 @@ namespace hms.Models
         public Department Dept { get; set; } = null!;
 
         [ForeignKey("UName")]
+        [JsonIgnore]
         public User User { get; set; } = null!;
     }
   

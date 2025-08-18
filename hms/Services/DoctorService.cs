@@ -10,11 +10,11 @@ namespace hms.Services
     public class DoctorService(
         IDoctorRepository doctorRepo,
         IMapper mapper,
-        IUNameService namer) : IDoctorService
+        IUserService userService) : IDoctorService
     {
         private readonly IDoctorRepository _doctorRepo = doctorRepo;
         private readonly IMapper _mapper = mapper;
-        private readonly IUNameService _namer = namer;
+        private readonly IUserService _userService = userService;
         public async Task<int> Count()
         {
             return await _doctorRepo.Count();
@@ -42,8 +42,16 @@ namespace hms.Services
         public async Task<Doctor> Add(DoctorDtoNew doctor)
         {
             Doctor d = _mapper.Map<Doctor>(doctor);
-            d.UName = _namer.Generate(doctor.Name);
-            await _doctorRepo.Add(d);
+            User user = await _userService.Add(doctor.Name, User.Types.Doctor);
+            d.UName = user.UName;
+            try
+            {
+                await _doctorRepo.Add(d);
+            } catch (Exception)
+            {
+                await _userService.Delete(user.UName);
+                throw;
+            }
             return d;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace hms.Models
 {
@@ -25,6 +26,7 @@ namespace hms.Models
         public required DateOnly DateBirth { get; set; }
 
         [ForeignKey("UName")]
+        [JsonIgnore]
         public User User { get; set; } = null!;
     }
 }

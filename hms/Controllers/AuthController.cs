@@ -63,7 +63,7 @@ namespace hms.Controllers
             return Ok();
         }
 
-        [HttpGet("users/{uname}", Name="GetByUName")]
+        /*[HttpGet("users/{uname}", Name="GetByUName")]
         [Authorize(Roles = Roles.Receptionist)]
         public async Task<UserDtoGet> Get(string uname)
         {
@@ -114,7 +114,7 @@ namespace hms.Controllers
                 "patients" => await GetAllByType(hms.Models.User.Types.Patient, page, page_size),
                 _ => throw new ErrBadReq(),
             };
-        }
+        }*/
 
         [HttpGet("whoami")]
         [Authorize]
