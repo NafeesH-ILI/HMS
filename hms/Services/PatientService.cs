@@ -38,7 +38,7 @@ namespace hms.Services
         public async Task<Patient> Add(PatientDtoNew patientDto)
         {
             Patient p = _mapper.Map<Patient>(patientDto);
-            p.UName = _namer.Generate("persons", p.Name);
+            p.UName = _namer.Generate(p.Name);
             await _patientRepo.Add(p);
             return p;
         }

@@ -97,7 +97,7 @@ namespace hms.Controllers
         public async Task<ActionResult> Post(DoctorDtoNew doctor)
         {
             Doctor d = new() {
-                UName = _namer.Generate("persons", doctor.Name),
+                UName = _namer.Generate(doctor.Name),
                 Name = doctor.Name,
                 MaxQualification = doctor.MaxQualification,
                 Specialization = doctor.Specialization,

@@ -2,8 +2,6 @@
 {
     public interface IUNameService
     {
-        public string UNameOf(string fullName);
-
-        public string Generate(string table, string fullName);
+        public string Generate(string fullName);
     }
 }
