@@ -1,14 +1,9 @@
-﻿using AutoMapper;
-using hms.Common;
+﻿using hms.Common;
 using hms.Models;
 using hms.Models.DTOs;
-using hms.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using System.Security.Cryptography.Xml;
 
 namespace hms.Controllers
 {
@@ -16,56 +11,41 @@ namespace hms.Controllers
     [Route("/api/v2/auth")]
     public class AuthController(
         ILogger<AuthController> logger,
-        IMapper mapper,
-        IUserService userService) : ControllerBase
+        SignInManager<User> signInManager,
+        UserManager<User> userManager) : ControllerBase
     {
         private readonly ILogger<AuthController> _logger = logger;
-        private readonly IMapper _mapper = mapper;
-        private readonly IUserService _userService = userService;
+        private readonly SignInManager<User> _signInManager = signInManager;
+        private readonly UserManager<User> _users = userManager;
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthDto auth)
         {
-            if (!await _userService.Authenticate(auth.UName, auth.Password))
+            Microsoft.AspNetCore.Identity.SignInResult res =
+                await _signInManager.PasswordSignInAsync(auth.UName,
+                    auth.Password, false, false);
+            if (!res.Succeeded)
                 return Unauthorized("bad credentials");
-            User user = await _userService.GetByUName(auth.UName);
-            List<Claim> claims =
-            [
-                new (ClaimTypes.Name, auth.UName),
-                new (ClaimTypes.Role, user.Type.ToString())
-            ];
-            ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            AuthenticationProperties props = new();
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(identity), props);
-            _logger.LogInformation("User {UName} Logged in", user.UName);
             return Ok();
         }
 
         [HttpGet("logout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
-            return Ok();
-        }
-
-        [HttpPost("password-reset/{uname}")]
-        public async Task<IActionResult> passReset(string uname)
-        {
-
+            await _signInManager.SignOutAsync();
             return Ok();
         }
 
         [HttpGet("whoami")]
         [Authorize]
-        public WhoAmI WhoAmI()
+        public async Task<WhoAmI> WhoAmI()
         {
+            User user = await _users.GetUserAsync(User) ?? throw new ErrNotFound();
+            IList<string> roles = await _users.GetRolesAsync(user);
             return new WhoAmI
             {
-                Role = User.FindFirst(ClaimTypes.Role)?.Value,
-                UName = User.Identity?.Name
+                Role = roles.FirstOrDefault() ?? "NULL",
+                UName = user.UserName
             };
         }
     }

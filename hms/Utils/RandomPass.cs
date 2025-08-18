@@ -17,9 +17,12 @@ namespace hms.Utils
 
         public static string Password(int length = 20)
         {
+            if (length < 3)
+                throw new Exception("Random Password length too low");
             string pool = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM" +
                 "1234567890" + "~!@#$%^&*()_+-=[]{};:,./<>?";
-            return Generate(pool, length);
+            string ending = "A$0";
+            return Generate(pool, length - ending.Length) + ending;
         }
 
         public static string OTP(int length = 10)
