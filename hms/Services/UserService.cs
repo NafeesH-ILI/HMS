@@ -1,4 +1,5 @@
-﻿using hms.Models;
+﻿using AutoMapper;
+using hms.Models;
 using hms.Models.DTOs;
 using hms.Services.Interfaces;
 using hms.Utils;
@@ -10,11 +11,15 @@ namespace hms.Services
         UserManager<User> users,
         ILogger<UserService> logger,
         IPassResetService passService,
+        IUNameService namer,
+        IMapper mapper,
         DbCtx ctx) : IUserService
     {
         private readonly UserManager<User> _users = users;
         private readonly ILogger<UserService> _logger = logger;
         private readonly IPassResetService _passService = passService;
+        private readonly IUNameService _namer = namer;
+        private readonly IMapper _mapper = mapper;
         private readonly DbCtx _ctx = ctx;
 
         public int Count()
@@ -48,6 +53,27 @@ namespace hms.Services
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
+        }
+
+        public async Task<User> Add(UserDtoNew dto)
+        {
+            User.Types uType = _mapper.Map<TypeType>(new TypeString { Type = dto.Type }).Type;
+            if (uType == User.Types.Patient ||
+                uType == User.Types.Doctor)
+            {
+                throw new ErrBadReq();
+            }
+            User user = new()
+            {
+                UserName = _namer.Generate(dto.Name),
+                Type = uType
+            };
+            var res = await _users.CreateAsync(user);
+            if (!res.Succeeded)
+                throw new ErrBadReq();
+            await _users.AddToRoleAsync(user, user.Type.ToString());
+            await _ctx.SaveChangesAsync();
+            return user;
         }
 
         public async Task PasswordChange(string uname, string password)

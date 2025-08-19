@@ -65,18 +65,5 @@ namespace hms.Controllers
             await _userService.PasswordChange(uname, password.Password);
             return Ok();
         }
-
-        [HttpGet("whoami")]
-        [Authorize]
-        public async Task<WhoAmI> WhoAmI()
-        {
-            User user = await _users.GetUserAsync(User) ?? throw new ErrNotFound();
-            IList<string> roles = await _users.GetRolesAsync(user);
-            return new WhoAmI
-            {
-                Role = roles.FirstOrDefault() ?? "NULL",
-                UName = user.UserName ?? "NULL"
-            };
-        }
     }
 }

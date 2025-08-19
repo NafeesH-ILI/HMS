@@ -32,7 +32,10 @@ builder.Services.AddAutoMapper(static config => {
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DepartmentDtoNew, Department>();
     config.CreateMap<DepartmentDtoPut, Department>();
-    config.CreateMap<User, UserDtoGet>();
+    config.CreateMap<User, UserDtoGet>()
+        .ForMember(dest => dest.UName, opt => opt.MapFrom(src => src.UserName));
+    config.CreateMap<TypeType, TypeString>();
+    config.CreateMap<TypeString, TypeType>();
 });
 
 // register repos

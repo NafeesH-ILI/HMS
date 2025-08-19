@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace hms.Utils
                 ctx.Exception is SqlTypeException ||
                 ctx.Exception is DbUpdateException ||
                 ctx.Exception is ErrBadPagination ||
+                ctx.Exception is AutoMapperMappingException ||
                 ctx.Exception is ArgumentException)
             {
                 ctx.Result = new BadRequestResult();
