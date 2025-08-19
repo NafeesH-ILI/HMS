@@ -21,10 +21,7 @@ namespace hms.Utils
                 ctx.Exception is SqlTypeException ||
                 ctx.Exception is DbUpdateException ||
                 ctx.Exception is ErrBadPagination ||
-<<<<<<< HEAD
                 ctx.Exception is AutoMapperMappingException ||
-=======
->>>>>>> master
                 ctx.Exception is ArgumentException)
             {
                 ctx.Result = new BadRequestResult();

@@ -5,11 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-<<<<<<< HEAD
 using hms.Utils;
-=======
-using hms.Common;
->>>>>>> master
 
 #nullable disable
 
