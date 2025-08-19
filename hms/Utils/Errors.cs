@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data.SqlTypes;
 using System.Net.Http.Headers;
 
-namespace hms.Common
+namespace hms.Utils
 {
     public class ErrorHandlerAttribute : ExceptionFilterAttribute
     {

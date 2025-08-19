@@ -1,7 +1,7 @@
-﻿using hms.Common;
-using hms.Models;
+﻿using hms.Models;
 using hms.Models.DTOs;
 using hms.Services.Interfaces;
+using hms.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;

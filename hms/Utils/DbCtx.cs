@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace hms.Common
+namespace hms.Utils
 {
     public class DbCtx : IdentityDbContext<User, IdentityRole, string>
     {
@@ -12,6 +12,7 @@ namespace hms.Common
         public DbSet<Department> Departments { get; set; }
         public DbSet<UName> UNames { get; set; }
         public DbSet<Patient> Patients { get; set; }
+        public DbSet<PassResetOtp> Otps { get; set; }
 
         public DbCtx() { }
         public DbCtx(DbContextOptions<DbCtx> options) : base(options) { }

@@ -1,7 +1,8 @@
 ﻿namespace hms.Models.DTOs
 {
-    public class UserDtoUpdate
+    public class PasswordResetDto
     {
         public required string Password { get; set; }
+        public required string Otp { get; set; }
     }
 }

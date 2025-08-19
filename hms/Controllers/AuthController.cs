@@ -1,4 +1,4 @@
-﻿using hms.Common;
+﻿using hms.Utils;
 using hms.Models;
 using hms.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -45,7 +45,7 @@ namespace hms.Controllers
             return new WhoAmI
             {
                 Role = roles.FirstOrDefault() ?? "NULL",
-                UName = user.UserName
+                UName = user.UserName ?? "NULL"
             };
         }
     }

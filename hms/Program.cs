@@ -1,10 +1,10 @@
-using hms.Common;
 using hms.Models;
 using hms.Models.DTOs;
 using hms.Repos;
 using hms.Repos.Interfaces;
 using hms.Services;
 using hms.Services.Interfaces;
+using hms.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,11 +27,11 @@ builder.Services.AddAutoMapper(static config => {
     config.CreateMap<PatientDtoPatch, Patient>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DoctorDtoNew, Doctor>();
+    config.CreateMap<DoctorDtoPut, Doctor>();
     config.CreateMap<DoctorDtoPatch, Doctor>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DepartmentDtoNew, Department>();
     config.CreateMap<DepartmentDtoPut, Department>();
-    config.CreateMap<UserDtoNew, User>();
     config.CreateMap<User, UserDtoGet>();
 });
 

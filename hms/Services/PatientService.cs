@@ -1,5 +1,4 @@
-﻿using hms.Common;
-using hms.Utils;
+﻿using hms.Utils;
 using hms.Models;
 using hms.Models.DTOs;
 using hms.Repos.Interfaces;
@@ -60,7 +59,6 @@ namespace hms.Services
             catch (Exception)
             {
                 await _users.DeleteAsync(user);
-                // delete
                 throw;
             }
             return p;
