@@ -22,7 +22,7 @@ builder.Services.AddControllers();
 // also, this is removed in dotnet 9.0
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAutoMapper(config => {
+builder.Services.AddAutoMapper(static config => {
     config.CreateMap<PatientDtoNew, Patient>();
     config.CreateMap<PatientDtoPatch, Patient>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
@@ -31,29 +31,39 @@ builder.Services.AddAutoMapper(config => {
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DepartmentDtoNew, Department>();
     config.CreateMap<DepartmentDtoPut, Department>();
+    config.CreateMap<UserDtoNew, User>();
+    config.CreateMap<User, UserDtoGet>();
 });
 
 // register repos
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // register services
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IUNameService, UNameService>();
-builder.Services.AddScoped<IUserService, UserService>();
 
 // db ctx pool
 builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(DbCtx.ConnStr));
 
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+    {
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+    })
+    .AddEntityFrameworkStores<DbCtx>()
+    .AddDefaultTokenProviders();
+
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => {
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
         options.SlidingExpiration = true;
-        options.AccessDeniedPath = "/Forbidden/";
+        options.AccessDeniedPath = "/Forbidden/"; // should probably remove
     });
 
 builder.Services

@@ -6,5 +6,6 @@
         public required string MaxQualification { get; set; }
         public required string Specialization { get; set; }
         public required string DeptKey { get; set; }
+        public string? Password { get; set; }
     }
 }

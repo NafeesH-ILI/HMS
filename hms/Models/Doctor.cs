@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace hms.Models
 {
@@ -35,6 +36,10 @@ namespace hms.Models
         [ForeignKey("DeptKey")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Department Dept { get; set; } = null!;
+
+        [ForeignKey("UName")]
+        [JsonIgnore]
+        public User User { get; set; } = null!;
     }
   
 }

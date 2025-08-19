@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace hms.Models
 {
     [Table("patients")]
     public class Patient
     {
+        [Column("uname")]
         [Required]
         [Key]
         public required string UName { get; set; }
@@ -22,5 +24,9 @@ namespace hms.Models
         [Required]
         [Column("dob")]
         public required DateOnly DateBirth { get; set; }
+
+        [ForeignKey("UName")]
+        [JsonIgnore]
+        public User User { get; set; } = null!;
     }
 }

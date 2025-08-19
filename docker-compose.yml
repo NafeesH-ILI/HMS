@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres:17
+    container_name: postgres_test
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: abcd1234
+    ports:
+      - "5432:5432"

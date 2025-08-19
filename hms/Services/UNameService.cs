@@ -8,7 +8,7 @@ namespace hms.Services
     {
         private readonly DbCtx _ctx = ctx;
         private static readonly object _lock = new();
-        public string UNameOf(string fullName)
+        private static string UNameOf(string fullName)
         {
             if (string.IsNullOrWhiteSpace(fullName))
                 return string.Empty;
@@ -23,16 +23,16 @@ namespace hms.Services
             return $"{initials}.{last}";
         }
 
-        public string Generate(string table, string fullName)
+        public string Generate(string fullName)
         {
             string baseName = UNameOf(fullName);
             int count = 0;
             lock (_lock) // TODO: lock the DB table as well
             {
-                UName? uName = _ctx.UNames.Where(u => u.Name == baseName && u.Table == table).FirstOrDefault();
+                UName? uName = _ctx.UNames.Find(baseName);
                 if (uName == null)
                 {
-                    uName = new UName() { Name = baseName, Table = table, Count = 1 };
+                    uName = new UName() { Name = baseName, Count = 1 };
                     _ctx.UNames.Add(uName);
                 }
                 else
@@ -41,7 +41,7 @@ namespace hms.Services
                     uName.Count++;
                     _ctx.UNames.Update(uName);
                 }
-                _ctx.SaveChanges(); // TODO: await on it?
+                _ctx.SaveChanges();
             }
             if (count == 0)
                 return baseName;

@@ -4,17 +4,21 @@ using hms.Models;
 using hms.Models.DTOs;
 using hms.Repos.Interfaces;
 using hms.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using hms.Utils;
 
 namespace hms.Services
 {
     public class DoctorService(
         IDoctorRepository doctorRepo,
-        IMapper mapper,
-        IUNameService namer) : IDoctorService
+        UserManager<User> userManager,
+        IUNameService namer,
+        IMapper mapper) : IDoctorService
     {
         private readonly IDoctorRepository _doctorRepo = doctorRepo;
-        private readonly IMapper _mapper = mapper;
         private readonly IUNameService _namer = namer;
+        private readonly UserManager<User> _users = userManager;
+        private readonly IMapper _mapper = mapper;
         public async Task<int> Count()
         {
             return await _doctorRepo.Count();
@@ -42,8 +46,25 @@ namespace hms.Services
         public async Task<Doctor> Add(DoctorDtoNew doctor)
         {
             Doctor d = _mapper.Map<Doctor>(doctor);
-            d.UName = _namer.Generate("persons", doctor.Name);
-            await _doctorRepo.Add(d);
+            User user = new()
+            {
+                UserName = _namer.Generate(doctor.Name),
+                Type = User.Types.Doctor
+            };
+            if (!(await _users.CreateAsync(user,
+                        doctor.Password ?? RandomPass.Password())).Succeeded)
+            {
+                throw new ErrBadReq();
+            }
+            await _users.AddToRoleAsync(user, user.Type.ToString());
+            try
+            {
+                await _doctorRepo.Add(d);
+            } catch (Exception)
+            {
+                await _users.DeleteAsync(user);
+                throw;
+            }
             return d;
         }
 
