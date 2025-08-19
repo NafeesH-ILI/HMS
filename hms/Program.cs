@@ -47,7 +47,7 @@ builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IUNameService, UNameService>();
 
 // db ctx pool
-builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(DbCtx.ConnStr));
+builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(Consts.ConnStr));
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
     {

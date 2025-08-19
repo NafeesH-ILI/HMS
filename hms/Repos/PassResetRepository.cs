@@ -17,9 +17,18 @@ namespace hms.Repos
             return otp;
         }
 
-        public async Task<ICollection<PassResetOtp>> GetValid(string uname, string otp)
+        public async Task<int> CountValid(string uname)
         {
-            return await _ctx.Otps.Where(o => o.Expiry < DateTime.Now && o.UName == uname && o.Otp == otp).ToListAsync();
+            return await _ctx.Otps
+                .Where(o => o.UName == uname)
+                .Where(o => o.IsValid)
+                .Where(o => o.Expiry < DateTime.Now.AddMinutes(Consts.OtpValidityMinutes))
+                .CountAsync();
+        }
+
+        public async Task<PassResetOtp?> Get(Guid id)
+        {
+            return await _ctx.Otps.FindAsync(id);
         }
 
         public async Task Invalidate(PassResetOtp otp)

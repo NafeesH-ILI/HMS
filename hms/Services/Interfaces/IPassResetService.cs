@@ -4,7 +4,7 @@ namespace hms.Services.Interfaces
 {
     public interface IPassResetService
     {
-        public Task<string> New(string uname);
-        public Task<bool> Validate(string uname, string otp);
+        public Task<PassResetOtp> New(string uname);
+        public Task<PassResetOtp?> Validate(Guid id, string otp);
     }
 }
