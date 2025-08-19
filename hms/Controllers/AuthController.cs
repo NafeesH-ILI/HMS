@@ -4,9 +4,12 @@ using hms.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+<<<<<<< HEAD
 using hms.Repos.Interfaces;
 using hms.Services;
 using hms.Services.Interfaces;
+=======
+>>>>>>> master
 
 namespace hms.Controllers
 {
@@ -14,6 +17,7 @@ namespace hms.Controllers
     [Route("/api/v2/auth")]
     public class AuthController(
         ILogger<AuthController> logger,
+<<<<<<< HEAD
         IUserService userService,
         SignInManager<User> signInManager,
         UserManager<User> userManager,
@@ -24,6 +28,14 @@ namespace hms.Controllers
         private readonly IUserService _userService = userService;
         private readonly UserManager<User> _users = userManager;
         private readonly DbCtx _ctx = ctx;
+=======
+        SignInManager<User> signInManager,
+        UserManager<User> userManager) : ControllerBase
+    {
+        private readonly ILogger<AuthController> _logger = logger;
+        private readonly SignInManager<User> _signInManager = signInManager;
+        private readonly UserManager<User> _users = userManager;
+>>>>>>> master
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthDto auth)
@@ -43,6 +55,7 @@ namespace hms.Controllers
             return Ok();
         }
 
+<<<<<<< HEAD
         [HttpPost("password-reset/request")]
         public async Task<PasswordResetSessionDto> PasswordReset([FromBody] PassResetRequestDto req)
         {
@@ -64,6 +77,19 @@ namespace hms.Controllers
         {
             await _userService.PasswordChange(uname, password.Password);
             return Ok();
+=======
+        [HttpGet("whoami")]
+        [Authorize]
+        public async Task<WhoAmI> WhoAmI()
+        {
+            User user = await _users.GetUserAsync(User) ?? throw new ErrNotFound();
+            IList<string> roles = await _users.GetRolesAsync(user);
+            return new WhoAmI
+            {
+                Role = roles.FirstOrDefault() ?? "NULL",
+                UName = user.UserName
+            };
+>>>>>>> master
         }
     }
 }

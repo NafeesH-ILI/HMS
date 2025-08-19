@@ -32,28 +32,48 @@ builder.Services.AddAutoMapper(static config => {
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DepartmentDtoNew, Department>();
     config.CreateMap<DepartmentDtoPut, Department>();
+<<<<<<< HEAD
     config.CreateMap<User, UserDtoGet>()
         .ForMember(dest => dest.UName, opt => opt.MapFrom(src => src.UserName));
     config.CreateMap<TypeType, TypeString>();
     config.CreateMap<TypeString, TypeType>();
+=======
+    config.CreateMap<UserDtoNew, User>();
+    config.CreateMap<User, UserDtoGet>();
+>>>>>>> master
 });
 
 // register repos
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+<<<<<<< HEAD
 builder.Services.AddScoped<IPassResetRepository, PassResetRepository>();
+=======
+>>>>>>> master
 
 // register services
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IUNameService, UNameService>();
+<<<<<<< HEAD
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPassResetService, PassResetService>();
+=======
+>>>>>>> master
 
 // db ctx pool
 builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(Consts.ConnStr));
+
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+    {
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+    })
+    .AddEntityFrameworkStores<DbCtx>()
+    .AddDefaultTokenProviders();
+
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
     {

@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 ﻿using hms.Utils;
+=======
+﻿using hms.Common;
+using hms.Utils;
+>>>>>>> master
 using hms.Models;
 using hms.Models.DTOs;
 using hms.Repos.Interfaces;
@@ -59,6 +64,10 @@ namespace hms.Services
             catch (Exception)
             {
                 await _users.DeleteAsync(user);
+<<<<<<< HEAD
+=======
+                // delete
+>>>>>>> master
                 throw;
             }
             return p;

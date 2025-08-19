@@ -3,15 +3,26 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+<<<<<<< HEAD
 namespace hms.Utils
 {
     public class DbCtx : IdentityDbContext<User, IdentityRole, string>
     {
+=======
+namespace hms.Common
+{
+    public class DbCtx : IdentityDbContext<User, IdentityRole, string>
+    {
+        public static string ConnStr = "Host=127.0.0.1;Username=postgres;Password=abcd1234;Database=hms";
+>>>>>>> master
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<UName> UNames { get; set; }
         public DbSet<Patient> Patients { get; set; }
+<<<<<<< HEAD
         public DbSet<PassResetOtp> Otps { get; set; }
+=======
+>>>>>>> master
 
         public DbCtx() { }
         public DbCtx(DbContextOptions<DbCtx> options) : base(options) { }
