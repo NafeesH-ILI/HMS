@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using System.Data.SqlTypes;
 using System.Net.Http.Headers;
 
-namespace hms.Common
+namespace hms.Utils
 {
     public class ErrorHandlerAttribute : ExceptionFilterAttribute
     {
@@ -20,6 +21,7 @@ namespace hms.Common
                 ctx.Exception is SqlTypeException ||
                 ctx.Exception is DbUpdateException ||
                 ctx.Exception is ErrBadPagination ||
+                ctx.Exception is AutoMapperMappingException ||
                 ctx.Exception is ArgumentException)
             {
                 ctx.Result = new BadRequestResult();

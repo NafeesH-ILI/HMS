@@ -11,7 +11,7 @@ namespace hms.Services.Interfaces
         public Task<bool> ExistsByUName(string uname);
         public Task<IList<Doctor>> Get(int page = 1, int pageSize = 10);
         public Task<Doctor> Add(DoctorDtoNew doctor);
-        public Task Update(string uname, DoctorDtoNew doctor);
+        public Task Update(string uname, DoctorDtoPut doctor);
         public Task Update(string uname, DoctorDtoPatch doctor);
         public Task Delete(string uname);
     }

@@ -1,6 +1,6 @@
-﻿using hms.Common;
-using hms.Models;
+﻿using hms.Models;
 using hms.Repos.Interfaces;
+using hms.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace hms.Repos

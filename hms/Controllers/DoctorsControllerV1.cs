@@ -1,7 +1,7 @@
-﻿using hms.Common;
-using hms.Models;
+﻿using hms.Models;
 using hms.Models.DTOs;
 using hms.Services.Interfaces;
+using hms.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -17,7 +17,7 @@ namespace hms.Controllers
     {
         private readonly ILogger<DoctorsControllerV1> logger = logger;
         private readonly IUNameService _namer = namer;
-        private readonly NpgsqlDataSource db = NpgsqlDataSource.Create(DbCtx.ConnStr)!;
+        private readonly NpgsqlDataSource db = NpgsqlDataSource.Create(Consts.ConnStr)!;
 
         [HttpGet]
         [Authorize(Roles = Roles.Anyone)]

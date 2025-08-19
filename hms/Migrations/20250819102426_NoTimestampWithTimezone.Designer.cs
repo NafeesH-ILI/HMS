@@ -12,8 +12,8 @@ using hms.Utils;
 namespace hms.Migrations
 {
     [DbContext(typeof(DbCtx))]
-    [Migration("20250818185039_SeedingV2")]
-    partial class SeedingV2
+    [Migration("20250819102426_NoTimestampWithTimezone")]
+    partial class NoTimestampWithTimezone
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -223,6 +223,36 @@ namespace hms.Migrations
                     b.HasIndex("DeptKey");
 
                     b.ToTable("doctors");
+                });
+
+            modelBuilder.Entity("hms.Models.PassResetOtp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("Expiry")
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("expiry");
+
+                    b.Property<bool>("IsValid")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_valid");
+
+                    b.Property<string>("Otp")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("otp");
+
+                    b.Property<string>("UName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("unamme");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("pass_reset_otp");
                 });
 
             modelBuilder.Entity("hms.Models.Patient", b =>

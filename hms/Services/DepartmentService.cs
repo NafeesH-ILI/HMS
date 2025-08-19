@@ -3,7 +3,7 @@ using hms.Models.DTOs;
 using hms.Repos.Interfaces;
 using hms.Services.Interfaces;
 using AutoMapper;
-using hms.Common;
+using hms.Utils;
 
 namespace hms.Services
 {

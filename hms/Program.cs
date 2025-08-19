@@ -1,10 +1,10 @@
-using hms.Common;
 using hms.Models;
 using hms.Models.DTOs;
 using hms.Repos;
 using hms.Repos.Interfaces;
 using hms.Services;
 using hms.Services.Interfaces;
+using hms.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,27 +27,33 @@ builder.Services.AddAutoMapper(static config => {
     config.CreateMap<PatientDtoPatch, Patient>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DoctorDtoNew, Doctor>();
+    config.CreateMap<DoctorDtoPut, Doctor>();
     config.CreateMap<DoctorDtoPatch, Doctor>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
     config.CreateMap<DepartmentDtoNew, Department>();
     config.CreateMap<DepartmentDtoPut, Department>();
-    config.CreateMap<UserDtoNew, User>();
-    config.CreateMap<User, UserDtoGet>();
+    config.CreateMap<User, UserDtoGet>()
+        .ForMember(dest => dest.UName, opt => opt.MapFrom(src => src.UserName));
+    config.CreateMap<TypeType, TypeString>();
+    config.CreateMap<TypeString, TypeType>();
 });
 
 // register repos
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IPassResetRepository, PassResetRepository>();
 
 // register services
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IUNameService, UNameService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPassResetService, PassResetService>();
 
 // db ctx pool
-builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(DbCtx.ConnStr));
+builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(Consts.ConnStr));
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
     {

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using hms.Common;
+using hms.Utils;
 
 #nullable disable
 
@@ -220,6 +220,36 @@ namespace hms.Migrations
                     b.HasIndex("DeptKey");
 
                     b.ToTable("doctors");
+                });
+
+            modelBuilder.Entity("hms.Models.PassResetOtp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("Expiry")
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("expiry");
+
+                    b.Property<bool>("IsValid")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_valid");
+
+                    b.Property<string>("Otp")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("otp");
+
+                    b.Property<string>("UName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("unamme");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("pass_reset_otp");
                 });
 
             modelBuilder.Entity("hms.Models.Patient", b =>

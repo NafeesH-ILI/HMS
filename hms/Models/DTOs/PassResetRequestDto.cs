@@ -1,8 +1,7 @@
 ﻿namespace hms.Models.DTOs
 {
-    public class WhoAmI
+    public class PassResetRequestDto
     {
         public required string UName { get; set; }
-        public required string Role { get; set; }
     }
 }

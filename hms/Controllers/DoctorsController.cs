@@ -1,7 +1,7 @@
-﻿using hms.Common;
-using hms.Models;
+﻿using hms.Models;
 using hms.Models.DTOs;
 using hms.Services.Interfaces;
+using hms.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,7 +49,7 @@ namespace hms.Controllers
 
         [HttpPut("{uname}")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult> Put(string uname, DoctorDtoNew doctor)
+        public async Task<ActionResult> Put(string uname, DoctorDtoPut doctor)
         {
             await _doctorService.Update(uname, doctor);
             return Ok();

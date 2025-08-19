@@ -1,5 +1,4 @@
-﻿using hms.Common;
-using AutoMapper;
+﻿using AutoMapper;
 using hms.Models;
 using hms.Models.DTOs;
 using hms.Repos.Interfaces;
@@ -68,7 +67,7 @@ namespace hms.Services
             return d;
         }
 
-        public async Task Update(string uname, DoctorDtoNew doctor)
+        public async Task Update(string uname, DoctorDtoPut doctor)
         {
             if (!await ExistsByUName(uname))
                 throw new ErrNotFound();

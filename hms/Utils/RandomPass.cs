@@ -25,7 +25,7 @@ namespace hms.Utils
             return Generate(pool, length - ending.Length) + ending;
         }
 
-        public static string OTP(int length = 10)
+        public static string Otp(int length = 10)
         {
             return Generate("0123456789", length);
         }
