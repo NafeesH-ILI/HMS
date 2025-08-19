@@ -20,8 +20,8 @@ namespace hms.Models
         [Required]
         public required string Otp { get; set; }
 
-        [Column("expiry")]
         [Required]
+        [Column("expiry", TypeName = "timestamp(6)")]
         public DateTime Expiry { get; set; } = DateTime.Now;
 
         [Column("is_valid")]

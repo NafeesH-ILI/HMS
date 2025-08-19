@@ -32,6 +32,8 @@ namespace hms.Services
         public async Task<PassResetOtp?> Validate(Guid id, string password)
         {
             PassResetOtp passReset = await _passRepo.Get(id) ?? throw new ErrUnauthorized();
+            if (!passReset.IsValid || passReset.Expiry >= DateTime.Now.AddMinutes(Consts.OtpValidityMinutes))
+                throw new ErrUnauthorized();
             await _passRepo.Invalidate(passReset);
             User user = await _users.FindByNameAsync(passReset.UName) ?? throw new ErrNotFound();
             string token = await _users.GeneratePasswordResetTokenAsync(user);
