@@ -14,14 +14,14 @@ namespace hms.Controllers
     [Route("/api/v2/auth")]
     public class AuthController(
         ILogger<AuthController> logger,
-        //IPassResetService passResetService,
+        IUserService userService,
         SignInManager<User> signInManager,
         UserManager<User> userManager,
         DbCtx ctx) : ControllerBase
     {
         private readonly ILogger<AuthController> _logger = logger;
         private readonly SignInManager<User> _signInManager = signInManager;
-        //private readonly IPassResetService _passResetService = passResetService;
+        private readonly IUserService _userService = userService;
         private readonly UserManager<User> _users = userManager;
         private readonly DbCtx _ctx = ctx;
 
@@ -43,24 +43,18 @@ namespace hms.Controllers
             return Ok();
         }
 
-        [HttpPost("password-reset")]
-        //public async Task<PasswordResetSessionDto> PasswordReset([FromBody] string uname)
-        public async Task PasswordReset([FromBody] string uname)
+        [HttpPost("password-reset/request")]
+        public async Task<PasswordResetSessionDto> PasswordReset([FromBody] PassResetRequestDto req)
         {
-            /*PassResetOtp otp = await _passResetService.New(uname);
-            _logger.LogError("Email sending not implemented, OTP for {uname}:{Id} is {Otp}", uname, otp.Id, otp.Otp);
-            return new PasswordResetSessionDto { SessionId = otp.Id };*/
-            string token = await _users.GeneratePasswordResetTokenAsync(
-                await _users.GetUserAsync(User) ?? throw new ErrUnauthorized());
-            _logger.LogError("Email sending not implemented, Token for {uname} is {Otp}", uname, token);
+            PassResetOtp otp = await _userService.PasswordReset(req.UName);
+            _logger.LogError("Email sending not implemented, OTP for {uname}:{Id} is {Otp}", req.UName, otp.Id, otp.Otp);
+            return new PasswordResetSessionDto { SessionId = otp.Id };
         }
 
-        [HttpPost("password-reset/otp")]
-        public async Task<IActionResult> PasswordResetOtp([FromBody] PasswordDto password, [FromQuery] string token)
+        [HttpPost("password-reset")]
+        public async Task<IActionResult> PasswordResetOtp([FromBody] PasswordResetDto password)
         {
-            await _users.ResetPasswordAsync(
-                await _users.GetUserAsync(User) ?? throw new ErrUnauthorized(),
-                token, password.Password);
+            await _userService.PasswordReset(password);
             return Ok();
         }
 
@@ -68,12 +62,7 @@ namespace hms.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> PasswordResetByAdmin(string uname, [FromBody] PasswordDto password)
         {
-            User user = await _users.FindByNameAsync(uname) ?? throw new ErrNotFound();
-            string token = await _users.GeneratePasswordResetTokenAsync(user);
-            var res = await _users.ResetPasswordAsync(user, token, password.Password);
-            if (!res.Succeeded)
-                throw new Exception(res.Errors.ToString());
-            await _ctx.SaveChangesAsync();
+            await _userService.PasswordChange(uname, password.Password);
             return Ok();
         }
 

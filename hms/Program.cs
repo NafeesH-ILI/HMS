@@ -39,12 +39,15 @@ builder.Services.AddAutoMapper(static config => {
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IPassResetRepository, PassResetRepository>();
 
 // register services
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IUNameService, UNameService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPassResetService, PassResetService>();
 
 // db ctx pool
 builder.Services.AddDbContextPool<DbCtx>(options => options.UseNpgsql(Consts.ConnStr));
