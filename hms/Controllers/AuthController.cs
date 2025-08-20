@@ -32,7 +32,10 @@ namespace hms.Controllers
                 await _signInManager.PasswordSignInAsync(auth.UName,
                     auth.Password, false, false);
             if (!res.Succeeded)
+            {
+                _logger.LogError(res.ToString());
                 return Unauthorized("bad credentials");
+            }
             return Ok();
         }
 

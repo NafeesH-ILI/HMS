@@ -20,45 +20,45 @@ namespace hms.Controllers
 
         [HttpGet]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult<IAsyncEnumerable<Patient>>> GetAll(int page = 1, int page_size = 10)
+        public async Task<ActionResult<IEnumerable<PatientDtoGet>>> GetAll(int page = 1, int page_size = 10)
         {
             var count = await _patientService.Count();
             if (count == 0)
                 return NoContent();
-            return Ok(new PaginatedResponse<IList<Patient>>
+            return Ok(new PaginatedResponse<IEnumerable<PatientDtoGet>>
             {
                 Count = count,
-                Value = await _patientService.Get(page, page_size)
+                Value = (await _patientService.Get(page, page_size)).Select(p => _patientService.ToDtoGet(p))
             });
         }
 
         [HttpGet("{uname}", Name = "GetPatientByUName")]
         [Authorize(Roles = Roles.AnyoneButPatient)]
-        public async Task<ActionResult<Patient>> Get(string uname)
+        public async Task<ActionResult<PatientDtoGet>> Get(string uname)
         {
-            return Ok(await _patientService.GetByUName(uname));
+            return Ok(_patientService.ToDtoGet(await _patientService.GetByUName(uname)));
         }
 
         [HttpPost]
         [Authorize(Roles = Roles.Receptionist)]
-        public async Task<ActionResult<Patient>> Post(PatientDtoNew patientDto)
+        public async Task<ActionResult<PatientDtoGet>> Post(PatientDtoNew patientDto)
         {
-            Patient patient = await _patientService.Add(patientDto);
+            PatientDtoGet patient = _patientService.ToDtoGet(await _patientService.Add(patientDto));
             return CreatedAtRoute("GetPatientByUName",
                 new {uname = patient.UName},
                 patient);
         }
 
         [HttpPut("{uname}")]
-        [Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult> Put(string uname, PatientDtoNew patient)
+        [Authorize(Roles = Roles.Receptionist)]
+        public async Task<ActionResult> Put(string uname, PatientDtoPut patient)
         {
             await _patientService.Update(uname, patient);
             return Ok();
         }
 
         [HttpPatch("{uname}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.Receptionist)]
         public async Task<ActionResult> Patch(string uname, PatientDtoPatch patient)
         {
             await _patientService.Update(uname, patient);

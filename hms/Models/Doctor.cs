@@ -8,10 +8,10 @@ namespace hms.Models
     [Table("doctors")]
     public class Doctor
     {
-        [Column("uname")]
+        [Column("id")]
         [Key]
         [Required]
-        public required string UName { get; set; }
+        public required string Id { get; set; }
 
         [Column("name")]
         [Required]
@@ -37,7 +37,7 @@ namespace hms.Models
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Department Dept { get; set; } = null!;
 
-        [ForeignKey("UName")]
+        [ForeignKey("Id")]
         [JsonIgnore]
         public User User { get; set; } = null!;
     }

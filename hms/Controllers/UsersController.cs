@@ -66,7 +66,7 @@ namespace hms.Controllers
             }
             else if (user.Type == hms.Models.User.Types.Patient)
             {
-                res.Patient = await _patients.GetByUName(user.UserName!);
+                res.Patient = await _patients.GetById(user.Id);
             }
             return res;
         }

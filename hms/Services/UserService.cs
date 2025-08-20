@@ -55,6 +55,14 @@ namespace hms.Services
                 .ToList();
         }
 
+        public string? UNameOf(string id)
+        {
+            return _users.Users
+                .Where(u => u.Id == id)
+                .Select(u => u.UserName)
+                .FirstOrDefault();
+        }
+
         public async Task<User> Add(UserDtoNew dto)
         {
             User.Types uType = _mapper.Map<TypeType>(new TypeString { Type = dto.Type }).Type;
@@ -68,7 +76,7 @@ namespace hms.Services
                 UserName = _namer.Generate(dto.Name),
                 Type = uType
             };
-            var res = await _users.CreateAsync(user);
+            var res = await _users.CreateAsync(user, dto.Password);
             if (!res.Succeeded)
                 throw new ErrBadReq();
             await _users.AddToRoleAsync(user, user.Type.ToString());

@@ -11,26 +11,38 @@ namespace hms.Services
     public class PatientService(
         IPatientRepository patientRepo,
         IUNameService namer,
+        IUserService userService,
         UserManager<User> userManager,
+        DbCtx ctx,
         IMapper mapper) : IPatientService
     {
         private readonly IPatientRepository _patientRepo = patientRepo;
         private readonly IUNameService _namer = namer;
+        private readonly IUserService _userService = userService;
         private readonly UserManager<User> _users = userManager;
+        private readonly DbCtx _ctx = ctx;
         private readonly IMapper _mapper = mapper;
         public async Task<int> Count()
         {
             return await _patientRepo.Count();
         }
-
         public async Task<Patient> GetByUName(string uname)
         {
             return await _patientRepo.GetByUName(uname) ?? throw new ErrNotFound();
         }
 
+        public async Task<Patient> GetById(string id)
+        {
+            return await _patientRepo.GetById(id) ?? throw new ErrNotFound();
+        }
+
         public async Task<bool> ExistsByUName(string uname)
         {
             return await _patientRepo.ExistsByUName(uname);
+        }
+        public async Task<bool> ExistsById(string id)
+        {
+            return await _patientRepo.ExistsById(id);
         }
 
         public async Task<IList<Patient>> Get(int page = 1, int pageSize = 10)
@@ -52,6 +64,8 @@ namespace hms.Services
                 throw new ErrBadReq();
             }
             await _users.AddToRoleAsync(user, user.Type.ToString());
+            await _ctx.SaveChangesAsync();
+            p.Id = user.Id;
             try
             {
                 await _patientRepo.Add(p);
@@ -64,23 +78,30 @@ namespace hms.Services
             return p;
         }
 
-        public async Task Update(string uname, PatientDtoNew patientDto)
+        public async Task Update(string id, PatientDtoPut patientDto)
         {
-            Patient p = await GetByUName(uname);
+            Patient p = await GetById(id);
             _mapper.Map(patientDto, p);
             await _patientRepo.Update(p);
         }
 
-        public async Task Update(string uname, PatientDtoPatch patientDto)
+        public async Task Update(string id, PatientDtoPatch patientDto)
         {
-            Patient p = await GetByUName(uname);
+            Patient p = await GetById(id);
             _mapper.Map(patientDto, p);
             await _patientRepo.Update(p);
         }
 
-        public async Task Delete(string uname)
+        public async Task Delete(string id)
         {
-            await _patientRepo.Delete(await _patientRepo.GetByUName(uname) ?? throw new ErrNotFound());
+            await _patientRepo.Delete(await _patientRepo.GetById(id) ?? throw new ErrNotFound());
+        }
+
+        public PatientDtoGet ToDtoGet(Patient patient)
+        {
+            PatientDtoGet dto = _mapper.Map<PatientDtoGet>(patient);
+            dto.UName = _userService.UNameOf(patient.Id)!;
+            return dto;
         }
     }
 }

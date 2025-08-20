@@ -20,6 +20,8 @@ namespace hms.Services
                 initials += char.ToUpper(parts[i][0]);
             var last = parts[parts.Length - 1].ToLower();
             last = char.ToUpper(last[0]) + last.Substring(1).ToLower();
+            if (string.IsNullOrEmpty(initials))
+                return last;
             return $"{initials}.{last}";
         }
 

@@ -26,10 +26,12 @@ builder.Services.AddAutoMapper(static config => {
     config.CreateMap<PatientDtoNew, Patient>();
     config.CreateMap<PatientDtoPatch, Patient>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
+    config.CreateMap<Patient, PatientDtoGet>();
     config.CreateMap<DoctorDtoNew, Doctor>();
     config.CreateMap<DoctorDtoPut, Doctor>();
     config.CreateMap<DoctorDtoPatch, Doctor>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
+    config.CreateMap<Doctor, DoctorDtoGet>();
     config.CreateMap<DepartmentDtoNew, Department>();
     config.CreateMap<DepartmentDtoPut, Department>();
     config.CreateMap<User, UserDtoGet>()

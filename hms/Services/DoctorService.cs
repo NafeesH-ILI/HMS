@@ -11,12 +11,16 @@ namespace hms.Services
     public class DoctorService(
         IDoctorRepository doctorRepo,
         UserManager<User> userManager,
+        IUserService userService,
         IUNameService namer,
+        DbCtx ctx,
         IMapper mapper) : IDoctorService
     {
         private readonly IDoctorRepository _doctorRepo = doctorRepo;
-        private readonly IUNameService _namer = namer;
         private readonly UserManager<User> _users = userManager;
+        private readonly IUserService _userService = userService;
+        private readonly IUNameService _namer = namer;
+        private readonly DbCtx _ctx = ctx;
         private readonly IMapper _mapper = mapper;
         public async Task<int> Count()
         {
@@ -31,10 +35,18 @@ namespace hms.Services
         {
             return await _doctorRepo.GetByUName(uname) ?? throw new ErrNotFound();
         }
+        public async Task<Doctor> GetById(string id)
+        {
+            return await _doctorRepo.GetById(id) ?? throw new ErrNotFound();
+        }
 
         public async Task<bool> ExistsByUName(string uname)
         {
             return await _doctorRepo.ExistsByUName(uname);
+        }
+        public async Task<bool> ExistsById(string id)
+        {
+            return await _doctorRepo.ExistsById(id);
         }
 
         public async Task<IList<Doctor>> Get(int page = 1, int pageSize = 10)
@@ -56,6 +68,8 @@ namespace hms.Services
                 throw new ErrBadReq();
             }
             await _users.AddToRoleAsync(user, user.Type.ToString());
+            await _ctx.SaveChangesAsync();
+            d.Id = user.Id;
             try
             {
                 await _doctorRepo.Add(d);
@@ -69,10 +83,8 @@ namespace hms.Services
 
         public async Task Update(string uname, DoctorDtoPut doctor)
         {
-            if (!await ExistsByUName(uname))
-                throw new ErrNotFound();
-            Doctor d = _mapper.Map<Doctor>(doctor);
-            d.UName = uname;
+            Doctor d = await _doctorRepo.GetByUName(uname) ?? throw new ErrNotFound();
+            _mapper.Map(doctor, d);
             await _doctorRepo.Update(d);
         }
 
@@ -86,6 +98,13 @@ namespace hms.Services
         public async Task Delete(string uname)
         {
             await _doctorRepo.Delete(await GetByUName(uname) ?? throw new ErrNotFound());
+        }
+
+        public DoctorDtoGet ToDtoGet(Doctor doctor)
+        {
+            DoctorDtoGet dto = _mapper.Map<DoctorDtoGet>(doctor);
+            dto.UName = _userService.UNameOf(doctor.Id)!;
+            return dto;
         }
     }
 }
