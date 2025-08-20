@@ -46,6 +46,31 @@ namespace hms.Utils
                 UserId = "1",
                 RoleId = "64a1c0ab-8783-4cb7-ad7d-254c050815aa"
             });
+
+            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            {
+                Id = "64a1c0ab-8783-4cb7-ad7d-254c050815ba",
+                Name = "Admin",
+                NormalizedName = "ADMIN"
+            });
+            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            {
+                Id = "64a1c0ab-8783-4cb7-ad7d-254c050815ca",
+                Name = "Receptionist",
+                NormalizedName = "RECEPTIONIST"
+            });
+            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            {
+                Id = "64a1c0ab-8783-4cb7-ad7d-254c050815da",
+                Name = "Doctor",
+                NormalizedName = "DOCTOR"
+            });
+            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            {
+                Id = "64a1c0ab-8783-4cb7-ad7d-254c050815ea",
+                Name = "Patient",
+                NormalizedName = "PATIENT"
+            });
         }
 
         public bool CanConnect()

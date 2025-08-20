@@ -13,8 +13,8 @@ namespace hms.Services
             if (string.IsNullOrWhiteSpace(fullName))
                 return string.Empty;
             var parts = fullName.Trim().Split([' '], StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length == 1)
-                return parts[0].ToLower();
+            if (parts.Length == 0)
+                return string.Empty;
             var initials = "";
             for (int i = 0; i < parts.Length - 1; i++)
                 initials += char.ToUpper(parts[i][0]);
