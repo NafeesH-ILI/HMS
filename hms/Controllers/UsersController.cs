@@ -11,7 +11,6 @@ namespace hms.Controllers
 {
     [ApiController]
     [Route("/api/v2/users")]
-    [ErrorHandler]
     [Authorize]
     public class UsersController(
         IUserService userService,
