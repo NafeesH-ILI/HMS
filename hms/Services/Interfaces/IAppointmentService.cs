@@ -5,7 +5,8 @@ namespace hms.Services.Interfaces
 {
     public interface IAppointmentService
     {
-        public Task<int> Count();
+        public Task<Appointment> GetById(string id);
+        public Task<int> Count(Appointment.Statuses? status = null);
         public Task<IList<Appointment>> Get(int page = 1, int pageSize = 10,
             Appointment.Statuses? status = null);
 
@@ -20,15 +21,17 @@ namespace hms.Services.Interfaces
             int page = 1, int pageSize = 10, Appointment.Statuses? status = null);
 
         public Task<int> CountByDoctorPatient(string doctorUName, string patientUName,
-            Appointment.Statuses? status);
+            Appointment.Statuses? status = null);
 
         public Task<IList<Appointment>> GetByDoctorPatient(string doctorUName, string patientUName,
             int page = 1, int pageSize = 10, Appointment.Statuses? status = null);
 
         public Task<Appointment> Add(AppointmentDtoNew dto);
 
-        public Task<Appointment> Update(Guid Id, AppointmentDtoPut dto);
+        public Task<Appointment> Update(Guid Id, AppointmentDtoPatch dto);
 
         public Task Delete(Guid Id);
+
+        public AppointmentDtoGet ToDto(Appointment appt);
     }
 }

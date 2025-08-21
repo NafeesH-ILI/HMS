@@ -16,9 +16,11 @@ namespace hms.Repos
             return await _ctx.Appointments.FindAsync(Id);
         }
 
-        public async Task<int> Count()
+        public async Task<int> Count(Appointment.Statuses? status = null)
         {
-            return await _ctx.Appointments.CountAsync();
+            if (status == null)
+                return await _ctx.Appointments.CountAsync();
+            return await _ctx.Appointments.Where(a => a.Status == status).CountAsync();
         }
         public async Task<IList<Appointment>> Get(int page = 1, int pageSize = 10,
             Appointment.Statuses? status = null)
@@ -26,6 +28,7 @@ namespace hms.Repos
             if (!Pagination.IsValid(page, pageSize)) throw new ErrBadPagination();
             return await _ctx.Appointments
                 .Where(a => status == null || a.Status == status)
+                .OrderBy(a => a.Time)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -47,6 +50,7 @@ namespace hms.Repos
                 .Where(a => status == null || a.Status == status)
                 .Include(a => a.PatientUser)
                 .Where(a => a.PatientUser!.UserName == patientUName)
+                .OrderBy(a => a.Time)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -68,6 +72,7 @@ namespace hms.Repos
                 .Where(a => status == null || a.Status == status)
                 .Include(a => a.PatientUser)
                 .Where(a => a.PatientUser!.UserName == doctorUName)
+                .OrderBy(a => a.Time)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -94,6 +99,7 @@ namespace hms.Repos
                 .Include(a => a.PatientUser)
                 .Where(a => a.DoctorUser!.UserName == doctorUName)
                 .Where(a => a.PatientUser!.UserName == patientUName)
+                .OrderBy(a => a.Time)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

@@ -6,7 +6,7 @@ namespace hms.Repos.Interfaces
     public interface IAppointmentRepository
     {
         public Task<Appointment?> GetById(Guid Id);
-        public Task<int> Count();
+        public Task<int> Count(Appointment.Statuses? status = null);
         public Task<IList<Appointment>> Get(int page = 1, int pageSize = 10,
             Appointment.Statuses? status = null);
         public Task<int> CountByPatient(string patientUName, Appointment.Statuses? status = null);

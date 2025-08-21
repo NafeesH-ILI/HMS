@@ -23,6 +23,7 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(static config => {
+    config.CreateMap<Appointment, AppointmentDtoGet>();
     config.CreateMap<PatientDtoNew, Patient>();
     config.CreateMap<PatientDtoPatch, Patient>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
@@ -38,15 +39,19 @@ builder.Services.AddAutoMapper(static config => {
         .ForMember(dest => dest.UName, opt => opt.MapFrom(src => src.UserName));
     config.CreateMap<TypeT<User.Types>, TypeTString<User.Types>>();
     config.CreateMap<TypeTString<User.Types>, TypeT<User.Types>>();
+    config.CreateMap<TypeTString<Appointment.Statuses>, TypeT<Appointment.Statuses>>();
+    config.CreateMap<TypeT<Appointment.Statuses>, TypeTString<Appointment.Statuses>>();
 });
 
 // register repos
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPassResetRepository, PassResetRepository>();
 
 // register services
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
