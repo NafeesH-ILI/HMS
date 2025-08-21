@@ -40,7 +40,7 @@ namespace hms.Controllers
             User.Types uType;
             try
             {
-                uType = _mapper.Map<TypeType>(new TypeString { Type = type }).Type;
+                uType = _mapper.Map<TypeT<User.Types>>(new TypeTString<User.Types> { Type = type }).Type;
             }
             catch (Exception)
             {
@@ -82,7 +82,8 @@ namespace hms.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<UserDtoGet>> Post([FromBody] UserDtoNew dto)
         {
-            hms.Models.User.Types uType = _mapper.Map<TypeType>(new TypeString { Type = dto.Type }).Type;
+            hms.Models.User.Types uType = _mapper.Map<TypeT<User.Types>>(
+                new TypeTString<User.Types> { Type = dto.Type }).Type;
             User actor = await _users.GetUserAsync(User) ?? throw new ErrForbidden();
             if (uType == hms.Models.User.Types.Admin ||
                 uType == hms.Models.User.Types.SuperAdmin)

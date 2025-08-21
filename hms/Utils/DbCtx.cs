@@ -11,6 +11,7 @@ namespace hms.Utils
         public DbSet<Department> Departments { get; set; }
         public DbSet<UName> UNames { get; set; }
         public DbSet<Patient> Patients { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
         public DbSet<PassResetOtp> Otps { get; set; }
 
         public DbCtx() { }
