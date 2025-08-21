@@ -105,6 +105,11 @@ builder.Services
 // this is where thhose appsettings.json etc get read
 var app = builder.Build();
 
+app.UseWebSockets(new WebSocketOptions
+{
+    KeepAliveInterval = TimeSpan.FromMinutes(Consts.WebSockKeepAliveMinutes)
+});
+
 // only include swagger UI in dev builds (not in release, final build)
 if (app.Environment.IsDevelopment())
 {
@@ -121,7 +126,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCustomExceptionHandler();
+app.UseCustomExceptionHandler(); // TODO: move this above
 
 // Maps controllers to the routes defined using [Route] and [HttpGet/Post/Etc]
 // If not done, swagger sees the endpoints, but they are not exposed. All return 404
