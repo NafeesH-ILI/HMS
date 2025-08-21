@@ -68,10 +68,18 @@ namespace hms.Utils
         public readonly int Code = code;
     }
 
-    public class ErrNotFound(string? msg = null) : CustomException(StatusCodes.Status404NotFound, msg ?? "Not Found") { }
-    public class ErrBadReq(string? msg = null) : CustomException(StatusCodes.Status400BadRequest, msg ?? "Bad Request") { }
-    public class ErrBadPagination(string? msg = null) : CustomException(StatusCodes.Status400BadRequest, msg ?? "Bad Pagination") { }
-    public class ErrAlreadyExists(string? msg = null) : CustomException(StatusCodes.Status409Conflict, msg ?? "Already Exists") { }
-    public class ErrUnauthorized(string? msg = null) : CustomException(StatusCodes.Status401Unauthorized, msg ?? "Unauthorized") { }
-    public class ErrForbidden(string? msg = null) : CustomException(StatusCodes.Status403Forbidden, msg ?? "Forbidden") { }
+    public class ErrNotFound(string? msg = null) : CustomException(StatusCodes.Status404NotFound,
+        msg ?? "Not Found") { }
+    public class ErrBadReq(string? msg = null) : CustomException(StatusCodes.Status400BadRequest,
+        msg ?? "Bad Request") { }
+    public class ErrBadPagination(string? msg = null) : CustomException(StatusCodes.Status400BadRequest,
+        msg ?? "Bad Pagination") { }
+    public class ErrAlreadyExists(string? msg = null) : CustomException(StatusCodes.Status409Conflict,
+        msg ?? "Already Exists") { }
+    public class ErrUnauthorized(string? msg = null) : CustomException(StatusCodes.Status401Unauthorized,
+        msg ?? "Unauthorized") { }
+    public class ErrForbidden(string? msg = null) : CustomException(StatusCodes.Status403Forbidden,
+        msg ?? "Forbidden") { }
+    public class ErrNotLegal(string? msg = null) : CustomException(
+        StatusCodes.Status451UnavailableForLegalReasons, msg ?? "Not Available for Legal Reason") { }
 }

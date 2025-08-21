@@ -2,9 +2,8 @@
 
 namespace hms.Models.DTOs
 {
-    public class TypeString
+    public class TypeTString<T>
     {
-        [EnumDataType(typeof(User.Types), ErrorMessage = "Not a valid User Type")]
         public required string Type { get; set; }
     }
 }

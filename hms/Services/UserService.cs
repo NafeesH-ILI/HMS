@@ -65,7 +65,8 @@ namespace hms.Services
 
         public async Task<User> Add(UserDtoNew dto)
         {
-            User.Types uType = _mapper.Map<TypeType>(new TypeString { Type = dto.Type }).Type;
+            User.Types uType = _mapper.Map<TypeT<User.Types>>(
+                new TypeTString<User.Types> { Type = dto.Type }).Type;
             if (uType == User.Types.Patient ||
                 uType == User.Types.Doctor)
             {

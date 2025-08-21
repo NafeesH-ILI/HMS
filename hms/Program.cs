@@ -36,8 +36,8 @@ builder.Services.AddAutoMapper(static config => {
     config.CreateMap<DepartmentDtoPut, Department>();
     config.CreateMap<User, UserDtoGet>()
         .ForMember(dest => dest.UName, opt => opt.MapFrom(src => src.UserName));
-    config.CreateMap<TypeType, TypeString>();
-    config.CreateMap<TypeString, TypeType>();
+    config.CreateMap<TypeT<User.Types>, TypeTString<User.Types>>();
+    config.CreateMap<TypeTString<User.Types>, TypeT<User.Types>>();
 });
 
 // register repos
