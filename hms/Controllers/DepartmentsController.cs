@@ -9,7 +9,6 @@ namespace hms.Controllers
 {
     [ApiController]
     [Route("/api/v2/departments")]
-    [ErrorHandler]
     [Authorize]
     public class DepartmentsController(
         ILogger<DepartmentsController> logger,

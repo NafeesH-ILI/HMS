@@ -26,10 +26,12 @@ builder.Services.AddAutoMapper(static config => {
     config.CreateMap<PatientDtoNew, Patient>();
     config.CreateMap<PatientDtoPatch, Patient>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
+    config.CreateMap<Patient, PatientDtoGet>();
     config.CreateMap<DoctorDtoNew, Doctor>();
     config.CreateMap<DoctorDtoPut, Doctor>();
     config.CreateMap<DoctorDtoPatch, Doctor>()
         .ForAllMembers(opts => opts.Condition((src, dst, srcVal) => srcVal != null));
+    config.CreateMap<Doctor, DoctorDtoGet>();
     config.CreateMap<DepartmentDtoNew, Department>();
     config.CreateMap<DepartmentDtoPut, Department>();
     config.CreateMap<User, UserDtoGet>()
@@ -67,10 +69,23 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(Consts.CookieValidityMinutes);
         options.SlidingExpiration = true;
-        options.AccessDeniedPath = "/Forbidden/"; // should probably remove
     });
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.CompletedTask;
+    };
+});
 
 builder.Services
     .AddAuthorization(options =>
@@ -100,6 +115,8 @@ app.UseHttpsRedirection();
 // authorization middleware. we not using it right now, so does not matter
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCustomExceptionHandler();
 
 // Maps controllers to the routes defined using [Route] and [HttpGet/Post/Etc]
 // If not done, swagger sees the endpoints, but they are not exposed. All return 404

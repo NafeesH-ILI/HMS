@@ -7,10 +7,10 @@ namespace hms.Models
     [Table("patients")]
     public class Patient
     {
-        [Column("uname")]
+        [Column("id")]
         [Required]
         [Key]
-        public required string UName { get; set; }
+        public required string Id { get; set; }
 
         [Required]
         [Column("phone")]
@@ -25,7 +25,7 @@ namespace hms.Models
         [Column("dob")]
         public required DateOnly DateBirth { get; set; }
 
-        [ForeignKey("UName")]
+        [ForeignKey("Id")]
         [JsonIgnore]
         public User User { get; set; } = null!;
     }

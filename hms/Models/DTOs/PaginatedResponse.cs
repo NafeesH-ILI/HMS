@@ -1,4 +1,4 @@
-﻿namespace hms.Utils
+﻿namespace hms.Models.DTOs
 {
     public class PaginatedResponse<T>
     {

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using hms.Utils;
@@ -11,9 +12,11 @@ using hms.Utils;
 namespace hms.Migrations
 {
     [DbContext(typeof(DbCtx))]
-    partial class DbCtxModelSnapshot : ModelSnapshot
+    [Migration("20250820045629_RoleSeeding")]
+    partial class RoleSeeding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,9 +215,9 @@ namespace hms.Migrations
 
             modelBuilder.Entity("hms.Models.Doctor", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("UName")
                         .HasColumnType("text")
-                        .HasColumnName("id");
+                        .HasColumnName("uname");
 
                     b.Property<string>("DeptKey")
                         .IsRequired()
@@ -239,7 +242,7 @@ namespace hms.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("specialization");
 
-                    b.HasKey("Id");
+                    b.HasKey("UName");
 
                     b.HasIndex("DeptKey");
 
@@ -278,9 +281,9 @@ namespace hms.Migrations
 
             modelBuilder.Entity("hms.Models.Patient", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("UName")
                         .HasColumnType("text")
-                        .HasColumnName("id");
+                        .HasColumnName("uname");
 
                     b.Property<DateOnly>("DateBirth")
                         .HasColumnType("date")
@@ -296,7 +299,7 @@ namespace hms.Migrations
                         .HasColumnType("text")
                         .HasColumnName("phone");
 
-                    b.HasKey("Id");
+                    b.HasKey("UName");
 
                     b.ToTable("patients");
                 });
@@ -463,7 +466,7 @@ namespace hms.Migrations
 
                     b.HasOne("hms.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("Id")
+                        .HasForeignKey("UName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -476,7 +479,7 @@ namespace hms.Migrations
                 {
                     b.HasOne("hms.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("Id")
+                        .HasForeignKey("UName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

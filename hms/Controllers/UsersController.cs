@@ -11,7 +11,6 @@ namespace hms.Controllers
 {
     [ApiController]
     [Route("/api/v2/users")]
-    [ErrorHandler]
     [Authorize]
     public class UsersController(
         IUserService userService,
@@ -45,7 +44,7 @@ namespace hms.Controllers
             }
             catch (Exception)
             {
-                throw new ErrBadReq();
+                throw new ErrBadReq($"Invalid Type `{type}`");
             }
             return new PaginatedResponse<IEnumerable<UserDtoGet>>
             {
@@ -66,7 +65,7 @@ namespace hms.Controllers
             }
             else if (user.Type == hms.Models.User.Types.Patient)
             {
-                res.Patient = await _patients.GetByUName(user.UserName!);
+                res.Patient = await _patients.GetById(user.Id);
             }
             return res;
         }
@@ -75,7 +74,7 @@ namespace hms.Controllers
         [Authorize]
         public async Task<UserDtoGet> WhoAmI()
         {
-            User user = await _users.GetUserAsync(User) ?? throw new ErrUnauthorized();
+            User user = await _users.GetUserAsync(User) ?? throw new ErrForbidden();
             return await Get(user.UserName!);
         }
 
@@ -84,12 +83,12 @@ namespace hms.Controllers
         public async Task<ActionResult<UserDtoGet>> Post([FromBody] UserDtoNew dto)
         {
             hms.Models.User.Types uType = _mapper.Map<TypeType>(new TypeString { Type = dto.Type }).Type;
-            User actor = await _users.GetUserAsync(User) ?? throw new ErrUnauthorized();
+            User actor = await _users.GetUserAsync(User) ?? throw new ErrForbidden();
             if (uType == hms.Models.User.Types.Admin ||
                 uType == hms.Models.User.Types.SuperAdmin)
             {
                 if (actor.Type != hms.Models.User.Types.SuperAdmin)
-                    throw new ErrUnauthorized();
+                    throw new ErrForbidden();
             }
             User user = await _userService.Add(dto);
             UserDtoGet res = _mapper.Map<UserDtoGet>(user);

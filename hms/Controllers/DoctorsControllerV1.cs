@@ -8,7 +8,7 @@ using Npgsql;
 
 namespace hms.Controllers
 {
-    [ApiController]
+    /*[ApiController]
     [Route("/api/v1/doctors")]
     [Authorize]
     public class DoctorsControllerV1(
@@ -239,5 +239,5 @@ namespace hms.Controllers
             }
             return Ok();
         }
-    }
+    }*/
 }

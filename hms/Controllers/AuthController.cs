@@ -10,7 +10,6 @@ using hms.Services.Interfaces;
 
 namespace hms.Controllers
 {
-    [ErrorHandler]
     [Route("/api/v2/auth")]
     public class AuthController(
         ILogger<AuthController> logger,
@@ -32,7 +31,10 @@ namespace hms.Controllers
                 await _signInManager.PasswordSignInAsync(auth.UName,
                     auth.Password, false, false);
             if (!res.Succeeded)
+            {
+                _logger.LogError(res.ToString());
                 return Unauthorized("bad credentials");
+            }
             return Ok();
         }
 
@@ -64,6 +66,17 @@ namespace hms.Controllers
         {
             await _userService.PasswordChange(uname, password.Password);
             return Ok();
+        }
+
+        [HttpPost("password")]
+        [Authorize]
+        public async Task<IActionResult> PasswordChange([FromBody] PasswordChangeDto req)
+        {
+            User user = await _users.GetUserAsync(User) ?? throw new ErrForbidden();
+            var res = await _users.ChangePasswordAsync(user, req.CurrentPassword, req.NewPassword);
+            if (res.Succeeded)
+                return Ok();
+            return BadRequest(res.Errors);
         }
     }
 }

@@ -16,13 +16,28 @@ namespace hms.Repos
 
         public async Task<Patient?> GetByUName(string uname)
         {
-            return await _ctx.Patients.FindAsync(uname);
+            return await _ctx.Patients
+                .Include(p => p.User)
+                .Where(p => p.User.UserName == uname)
+                .FirstOrDefaultAsync();
+        }
+        public async Task<Patient?> GetById(string id)
+        {
+            return await _ctx.Patients.FindAsync(id);
         }
 
         public async Task<bool> ExistsByUName(string uname)
         {
             return await _ctx.Patients
-                .Where(p => p.UName == uname)
+                .Include(p => p.User)
+                .Where(p => p.User.UserName == uname)
+                .CountAsync() > 0;
+        }
+
+        public async Task<bool> ExistsById(string id)
+        {
+            return await _ctx.Patients
+                .Where(p => p.Id == id)
                 .AnyAsync();
         }
 
@@ -33,6 +48,18 @@ namespace hms.Repos
             return await _ctx.Patients
                 .OrderBy(p => p.Phone)
                 .ThenBy(p => p.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<IList<Patient>> GetByPhone(string phone, int page = 1, int pageSize = 10)
+        {
+            if (page <= 0 || pageSize <= 0 || pageSize > 50)
+                throw new ErrBadPagination();
+            return await _ctx.Patients
+                .Where(p => p.Phone == phone)
+                .OrderBy(p => p.Name)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

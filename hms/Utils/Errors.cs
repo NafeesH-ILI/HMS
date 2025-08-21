@@ -1,45 +1,77 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using System.Data.SqlTypes;
-using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace hms.Utils
 {
-    public class ErrorHandlerAttribute : ExceptionFilterAttribute
+    public class CustomExceptionHandlerMiddleware(
+        RequestDelegate next,
+        ILogger<CustomExceptionHandlerMiddleware> logger)
     {
-        public override void OnException(ExceptionContext ctx)
+        private readonly RequestDelegate _next = next;
+        private readonly ILogger<CustomExceptionHandlerMiddleware> _logger = logger;
+
+        private void ExceptionHandle(HttpContext ctx, Exception ex)
         {
-            Console.WriteLine(ctx.Exception);
-            if (ctx.Exception is ErrNotFound)
+            _logger.LogWarning(ex, "handling exception");
+            string message = "";
+            int code;
+            if (ex is CustomException)
             {
-                ctx.Result = new NotFoundResult();
+                message = ((CustomException)ex).CustomMessage ?? message;
+                code = ((CustomException)ex).Code;
             }
-            else if (ctx.Exception is ErrBadReq ||
-                ctx.Exception is SqlTypeException ||
-                ctx.Exception is DbUpdateException ||
-                ctx.Exception is ErrBadPagination ||
-                ctx.Exception is AutoMapperMappingException ||
-                ctx.Exception is ArgumentException)
+            else if (ex is SqlTypeException ||
+                ex is DbUpdateException ||
+                ex is AutoMapperMappingException ||
+                ex is ArgumentException)
             {
-                ctx.Result = new BadRequestResult();
-            }
-            else if (ctx.Exception is ErrUnauthorized)
-            {
-                ctx.Result = new UnauthorizedResult();
+                message = "Invalid Data or Schema";
+                code = StatusCodes.Status400BadRequest;
             }
             else
             {
-                ctx.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                _logger.LogError(ex, "Unhandled Exception Type");
+                message = "Invalid Data or Schema";
+                code = StatusCodes.Status400BadRequest;
+            }
+            ctx.Response.ContentType = "application/json";
+            ctx.Response.StatusCode = code;
+            ctx.Response.WriteAsync(JsonSerializer.Serialize(new {Success = false, Message = message}));
+        }
+
+        public async Task InvokeAsync(HttpContext context)
+        {
+            try
+            {
+                await _next(context);
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandle(context, ex);
             }
         }
     }
 
-    public class ErrNotFound() : Exception { }
-    public class ErrBadReq() : Exception { }
-    public class ErrBadPagination() : Exception { }
-    public class ErrAlreadyExists() : Exception { }
-    public class ErrUnauthorized() : Exception { }
+    public static class CustomExceptionHandlerMiddlewareExtensions
+    {
+        public static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<CustomExceptionHandlerMiddleware>();
+        }
+    }
+
+    public class CustomException(int code, string? msg = null) : Exception
+    {
+        public readonly string? CustomMessage = msg;
+        public readonly int Code = code;
+    }
+
+    public class ErrNotFound(string? msg = null) : CustomException(StatusCodes.Status404NotFound, msg ?? "Not Found") { }
+    public class ErrBadReq(string? msg = null) : CustomException(StatusCodes.Status400BadRequest, msg ?? "Bad Request") { }
+    public class ErrBadPagination(string? msg = null) : CustomException(StatusCodes.Status400BadRequest, msg ?? "Bad Pagination") { }
+    public class ErrAlreadyExists(string? msg = null) : CustomException(StatusCodes.Status409Conflict, msg ?? "Already Exists") { }
+    public class ErrUnauthorized(string? msg = null) : CustomException(StatusCodes.Status401Unauthorized, msg ?? "Unauthorized") { }
+    public class ErrForbidden(string? msg = null) : CustomException(StatusCodes.Status403Forbidden, msg ?? "Forbidden") { }
 }

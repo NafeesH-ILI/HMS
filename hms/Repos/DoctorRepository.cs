@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace hms.Repos
 {
-    public class DoctorRepository (IUNameService namer, DbCtx ctx) : IDoctorRepository
+    public class DoctorRepository (
+        DbCtx ctx) : IDoctorRepository
     {
-        private readonly IUNameService _namer = namer;
         private readonly DbCtx _ctx = ctx;
 
         public async Task<int> Count()
@@ -26,7 +26,15 @@ namespace hms.Repos
         public async Task<Doctor?> GetByUName(string uname)
         {
             return await _ctx.Doctors
-                .Where(d => d.UName == uname)
+                .Include(d => d.User)
+                .Where(d => d.User.UserName == uname)
+                .Include(d => d.Dept)
+                .FirstOrDefaultAsync();
+        }
+        public async Task<Doctor?> GetById(string id)
+        {
+            return await _ctx.Doctors
+                .Where(d => d.Id == id)
                 .Include(d => d.Dept)
                 .FirstOrDefaultAsync();
         }
@@ -34,7 +42,14 @@ namespace hms.Repos
         public async Task<bool> ExistsByUName(string uname)
         {
             return await _ctx.Doctors
-                .Where(d => d.UName == uname)
+                .Include(d => d.User)
+                .Where(d => d.User.UserName == uname)
+                .CountAsync() > 0;
+        }
+        public async Task<bool> ExistsById(string id)
+        {
+            return await _ctx.Doctors
+                .Where(d => d.Id == id)
                 .CountAsync() > 0;
         }
 
@@ -43,7 +58,7 @@ namespace hms.Repos
             if (page <= 0 || pageSize <= 0 || pageSize > 50)
                 throw new ErrBadPagination();
             return await _ctx.Doctors
-                 .OrderBy(d => d.UName)
+                 .OrderBy(d => d.Id)
                  .Skip((page - 1) * pageSize)
                  .Take(pageSize)
                  .ToListAsync();
