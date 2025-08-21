@@ -69,7 +69,7 @@ namespace hms.Services
             if (uType == User.Types.Patient ||
                 uType == User.Types.Doctor)
             {
-                throw new ErrBadReq();
+                throw new ErrBadReq("Cannot Add Patient or Doctor via this method");
             }
             User user = new()
             {
@@ -78,7 +78,7 @@ namespace hms.Services
             };
             var res = await _users.CreateAsync(user, dto.Password);
             if (!res.Succeeded)
-                throw new ErrBadReq();
+                throw new ErrBadReq("Username or Password does not meet critera");
             await _users.AddToRoleAsync(user, user.Type.ToString());
             await _ctx.SaveChangesAsync();
             return user;
@@ -86,11 +86,11 @@ namespace hms.Services
 
         public async Task PasswordChange(string uname, string password)
         {
-            User user = await _users.FindByNameAsync(uname) ?? throw new ErrNotFound();
+            User user = await _users.FindByNameAsync(uname) ?? throw new ErrNotFound("User Not Found");
             string token = await _users.GeneratePasswordResetTokenAsync(user);
             var res = await _users.ResetPasswordAsync(user, token, password);
             if (!res.Succeeded)
-                throw new Exception(res.Errors.ToString());
+                throw new ErrBadReq("Password does not meet critera");
             await _ctx.SaveChangesAsync();
         }
 
@@ -103,8 +103,7 @@ namespace hms.Services
 
         public async Task PasswordReset(PasswordResetDto dto)
         {
-            PassResetOtp otp = await _passService.Validate(dto.SessionId, dto.Otp) ?? throw new ErrUnauthorized();
-            await PasswordChange(otp.UName, dto.Password);
+            await _passService.Reset(dto.SessionId, dto.Otp, dto.Password);
         }
     }
 }

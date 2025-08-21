@@ -29,16 +29,16 @@ namespace hms.Services
             return otp;
         }
 
-        public async Task<PassResetOtp?> Validate(Guid id, string password)
+        public async Task Reset(Guid id, string otp, string password)
         {
-            PassResetOtp passReset = await _passRepo.Get(id) ?? throw new ErrUnauthorized();
-            if (!passReset.IsValid || passReset.Expiry >= DateTime.Now.AddMinutes(Consts.OtpValidityMinutes))
-                throw new ErrUnauthorized();
+            PassResetOtp passReset = await _passRepo.Get(id) ?? throw new ErrForbidden("Bad OTP");
+            if (!passReset.IsValid || passReset.Expiry >= DateTime.Now.AddMinutes(Consts.OtpValidityMinutes) ||
+                passReset.Otp != otp)
+                throw new ErrForbidden("Bad OTP");
             await _passRepo.Invalidate(passReset);
-            User user = await _users.FindByNameAsync(passReset.UName) ?? throw new ErrNotFound();
+            User user = await _users.FindByNameAsync(passReset.UName) ?? throw new ErrNotFound("User Not Found");
             string token = await _users.GeneratePasswordResetTokenAsync(user);
             await _users.ResetPasswordAsync(user, token, password);
-            return passReset;
         }
     }
 }

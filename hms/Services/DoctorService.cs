@@ -65,7 +65,7 @@ namespace hms.Services
             if (!(await _users.CreateAsync(user,
                         doctor.Password ?? RandomPass.Password())).Succeeded)
             {
-                throw new ErrBadReq();
+                throw new ErrBadReq("Username or Password does not meet criteria");
             }
             await _users.AddToRoleAsync(user, user.Type.ToString());
             await _ctx.SaveChangesAsync();

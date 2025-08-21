@@ -72,7 +72,7 @@ namespace hms.Controllers
         [Authorize]
         public async Task<IActionResult> PasswordChange([FromBody] PasswordChangeDto req)
         {
-            User user = await _users.GetUserAsync(User) ?? throw new ErrUnauthorized();
+            User user = await _users.GetUserAsync(User) ?? throw new ErrForbidden();
             var res = await _users.ChangePasswordAsync(user, req.CurrentPassword, req.NewPassword);
             if (res.Succeeded)
                 return Ok();
