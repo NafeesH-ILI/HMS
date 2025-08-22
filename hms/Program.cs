@@ -55,7 +55,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
-builder.Services.AddScoped<IUNameService, UNameService>();
+builder.Services.AddScoped<INameService, NameService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPassResetService, PassResetService>();
 
@@ -101,9 +101,17 @@ builder.Services
         }*/
     });
 
+builder.Services.AddHostedService<OtpCleanupService>();
+
 // finally build as WebApplication from this WebApplicationBuilder
 // this is where thhose appsettings.json etc get read
 var app = builder.Build();
+
+/*using (var scope = app.Services.CreateScope())
+{
+    DbCtx ctx = scope.ServiceProvider.GetRequiredService<DbCtx>();
+    ctx.Database.Migrate();
+}*/
 
 app.UseWebSockets(new WebSocketOptions
 {
@@ -119,14 +127,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCustomExceptionHandler();
+
 // redirects requests coming on http:// to https:// using the PermantlyMoved response code
 app.UseHttpsRedirection();
 
 // authorization middleware. we not using it right now, so does not matter
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseCustomExceptionHandler(); // TODO: move this above
 
 // Maps controllers to the routes defined using [Route] and [HttpGet/Post/Etc]
 // If not done, swagger sees the endpoints, but they are not exposed. All return 404

@@ -12,14 +12,14 @@ namespace hms.Services
         IDoctorRepository doctorRepo,
         UserManager<User> userManager,
         IUserService userService,
-        IUNameService namer,
+        INameService namer,
         DbCtx ctx,
         IMapper mapper) : IDoctorService
     {
         private readonly IDoctorRepository _doctorRepo = doctorRepo;
         private readonly UserManager<User> _users = userManager;
         private readonly IUserService _userService = userService;
-        private readonly IUNameService _namer = namer;
+        private readonly INameService _namer = namer;
         private readonly DbCtx _ctx = ctx;
         private readonly IMapper _mapper = mapper;
         public async Task<int> Count()
@@ -33,11 +33,11 @@ namespace hms.Services
 
         public async Task<Doctor> GetByUName(string uname)
         {
-            return await _doctorRepo.GetByUName(uname) ?? throw new ErrNotFound();
+            return await _doctorRepo.GetByUName(uname) ?? throw new ErrNotFound("Doctor Not Found");
         }
         public async Task<Doctor> GetById(string id)
         {
-            return await _doctorRepo.GetById(id) ?? throw new ErrNotFound();
+            return await _doctorRepo.GetById(id) ?? throw new ErrNotFound("Doctor Not Found");
         }
 
         public async Task<bool> ExistsByUName(string uname)
@@ -56,6 +56,7 @@ namespace hms.Services
 
         public async Task<Doctor> Add(DoctorDtoNew doctor)
         {
+            _namer.ValidateName(doctor.Name);
             Doctor d = _mapper.Map<Doctor>(doctor);
             User user = new()
             {
@@ -83,21 +84,23 @@ namespace hms.Services
 
         public async Task Update(string uname, DoctorDtoPut doctor)
         {
-            Doctor d = await _doctorRepo.GetByUName(uname) ?? throw new ErrNotFound();
+            _namer.ValidateName(doctor.Name);
+            Doctor d = await _doctorRepo.GetByUName(uname) ?? throw new ErrNotFound("Doctor Not Found");
             _mapper.Map(doctor, d);
             await _doctorRepo.Update(d);
         }
 
         public async Task Update(string uname, DoctorDtoPatch doctor)
         {
-            Doctor? d = await GetByUName(uname) ?? throw new ErrNotFound();
+            Doctor? d = await GetByUName(uname) ?? throw new ErrNotFound("Doctor Not Found");
             _mapper.Map(doctor, d);
+            _namer.ValidateName(d.Name);
             await _doctorRepo.Update(d);
         }
 
         public async Task Delete(string uname)
         {
-            await _doctorRepo.Delete(await GetByUName(uname) ?? throw new ErrNotFound());
+            await _doctorRepo.Delete(await GetByUName(uname) ?? throw new ErrNotFound("Doctor Not Found"));
         }
 
         public DoctorDtoGet ToDtoGet(Doctor doctor)

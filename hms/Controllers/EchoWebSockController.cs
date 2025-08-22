@@ -6,10 +6,8 @@ namespace hms.Controllers
 {
     [ApiController]
     [Route("/api/v2/echo")]
-    public class EchoWebSockController(
-        ) : ControllerBase
+    public class EchoWebSockController : ControllerBase
     {
-
         [HttpGet]
         public async Task Get()
         {

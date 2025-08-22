@@ -12,8 +12,8 @@ using hms.Utils;
 namespace hms.Migrations
 {
     [DbContext(typeof(DbCtx))]
-    [Migration("20250818185039_SeedingV2")]
-    partial class SeedingV2
+    [Migration("20250822060030_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,6 +56,30 @@ namespace hms.Migrations
                             Id = "64a1c0ab-8783-4cb7-ad7d-254c050815aa",
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
+                        },
+                        new
+                        {
+                            Id = "64a1c0ab-8783-4cb7-ad7d-254c050815ba",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "64a1c0ab-8783-4cb7-ad7d-254c050815ca",
+                            Name = "Receptionist",
+                            NormalizedName = "RECEPTIONIST"
+                        },
+                        new
+                        {
+                            Id = "64a1c0ab-8783-4cb7-ad7d-254c050815da",
+                            Name = "Doctor",
+                            NormalizedName = "DOCTOR"
+                        },
+                        new
+                        {
+                            Id = "64a1c0ab-8783-4cb7-ad7d-254c050815ea",
+                            Name = "Patient",
+                            NormalizedName = "PATIENT"
                         });
                 });
 
@@ -172,6 +196,40 @@ namespace hms.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("hms.Models.Appointment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("DoctorId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("doctor_id");
+
+                    b.Property<string>("PatientId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("patient_id");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("appointments");
+                });
+
             modelBuilder.Entity("hms.Models.Department", b =>
                 {
                     b.Property<string>("UName")
@@ -191,9 +249,9 @@ namespace hms.Migrations
 
             modelBuilder.Entity("hms.Models.Doctor", b =>
                 {
-                    b.Property<string>("UName")
+                    b.Property<string>("Id")
                         .HasColumnType("text")
-                        .HasColumnName("uname");
+                        .HasColumnName("id");
 
                     b.Property<string>("DeptKey")
                         .IsRequired()
@@ -218,18 +276,48 @@ namespace hms.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("specialization");
 
-                    b.HasKey("UName");
+                    b.HasKey("Id");
 
                     b.HasIndex("DeptKey");
 
                     b.ToTable("doctors");
                 });
 
+            modelBuilder.Entity("hms.Models.PassResetOtp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("Expiry")
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("expiry");
+
+                    b.Property<bool>("IsValid")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_valid");
+
+                    b.Property<string>("Otp")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("otp");
+
+                    b.Property<string>("UName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("unamme");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("pass_reset_otp");
+                });
+
             modelBuilder.Entity("hms.Models.Patient", b =>
                 {
-                    b.Property<string>("UName")
+                    b.Property<string>("Id")
                         .HasColumnType("text")
-                        .HasColumnName("uname");
+                        .HasColumnName("id");
 
                     b.Property<DateOnly>("DateBirth")
                         .HasColumnType("date")
@@ -245,7 +333,7 @@ namespace hms.Migrations
                         .HasColumnType("text")
                         .HasColumnName("phone");
 
-                    b.HasKey("UName");
+                    b.HasKey("Id");
 
                     b.ToTable("patients");
                 });
@@ -402,6 +490,41 @@ namespace hms.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("hms.Models.Appointment", b =>
+                {
+                    b.HasOne("hms.Models.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hms.Models.User", "DoctorUser")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hms.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hms.Models.User", "PatientUser")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("DoctorUser");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("PatientUser");
+                });
+
             modelBuilder.Entity("hms.Models.Doctor", b =>
                 {
                     b.HasOne("hms.Models.Department", "Dept")
@@ -412,7 +535,7 @@ namespace hms.Migrations
 
                     b.HasOne("hms.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UName")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -425,7 +548,7 @@ namespace hms.Migrations
                 {
                     b.HasOne("hms.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UName")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

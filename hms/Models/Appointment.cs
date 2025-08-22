@@ -23,7 +23,7 @@ namespace hms.Models
         [Required]
         public required Statuses Status { get; set; } = Statuses.Scheduled;
 
-        [Column("time", TypeName = "timestamp(6)")]
+        [Column("time", TypeName = "timestamp without time zone")]
         [Required]
         public required DateTime Time { get; set; }
 

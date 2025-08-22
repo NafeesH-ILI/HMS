@@ -11,14 +11,14 @@ namespace hms.Services
         UserManager<User> users,
         ILogger<UserService> logger,
         IPassResetService passService,
-        IUNameService namer,
+        INameService namer,
         IMapper mapper,
         DbCtx ctx) : IUserService
     {
         private readonly UserManager<User> _users = users;
         private readonly ILogger<UserService> _logger = logger;
         private readonly IPassResetService _passService = passService;
-        private readonly IUNameService _namer = namer;
+        private readonly INameService _namer = namer;
         private readonly IMapper _mapper = mapper;
         private readonly DbCtx _ctx = ctx;
 
@@ -65,6 +65,7 @@ namespace hms.Services
 
         public async Task<User> Add(UserDtoNew dto)
         {
+            _namer.ValidateName(dto.Name);
             User.Types uType = _mapper.Map<TypeT<User.Types>>(
                 new TypeTString<User.Types> { Type = dto.Type }).Type;
             if (uType == User.Types.Patient ||
@@ -104,7 +105,7 @@ namespace hms.Services
 
         public async Task PasswordReset(PasswordResetDto dto)
         {
-            await _passService.Reset(dto.SessionId, dto.Otp, dto.Password);
+            await _passService.Reset(Guid.Parse(dto.SessionId), dto.Otp, dto.Password);
         }
     }
 }

@@ -9,5 +9,6 @@ namespace hms.Repos.Interfaces
         public Task<int> CountValid(string uname);
         public Task<PassResetOtp?> Get(Guid id);
         public Task Invalidate(PassResetOtp otp);
+        public Task Cleanup();
     }
 }

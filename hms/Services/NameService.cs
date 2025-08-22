@@ -4,7 +4,7 @@ using hms.Utils;
 
 namespace hms.Services
 {
-    public class UNameService(DbCtx ctx) : IUNameService
+    public class NameService(DbCtx ctx) : INameService
     {
         private readonly DbCtx _ctx = ctx;
         private static readonly object _lock = new();
@@ -23,6 +23,17 @@ namespace hms.Services
             if (string.IsNullOrEmpty(initials))
                 return last;
             return $"{initials}.{last}";
+        }
+
+        public void ValidateName(string Name)
+        {
+            if (Name.Length < Consts.UNameMinLen)
+                throw new ErrBadReq($"Name must contain at least {Consts.UNameMinLen} characters");
+            for (int i = 0; i < Name.Length; i++)
+            {
+                if (!Char.IsLetter(Name[i]) && Name[i] != ' ')
+                    throw new ErrBadReq("Name can only contain letters");
+            }
         }
 
         public string Generate(string fullName)

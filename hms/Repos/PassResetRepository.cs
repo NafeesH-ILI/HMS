@@ -37,5 +37,12 @@ namespace hms.Repos
             _ctx.Otps.Update(otp);
             await _ctx.SaveChangesAsync();
         }
+
+        public async Task Cleanup()
+        {
+            await _ctx.Otps
+                .Where(o => !o.IsValid || o.Expiry >= DateTime.Now)
+                .ExecuteDeleteAsync();
+        }
     }
 }

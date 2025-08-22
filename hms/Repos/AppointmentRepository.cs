@@ -1,5 +1,4 @@
-﻿using hms.Migrations;
-using hms.Models;
+﻿using hms.Models;
 using hms.Repos.Interfaces;
 using hms.Utils;
 using Microsoft.EntityFrameworkCore;
@@ -70,8 +69,8 @@ namespace hms.Repos
             if (!Pagination.IsValid(page, pageSize)) throw new ErrBadPagination();
             return await _ctx.Appointments
                 .Where(a => status == null || a.Status == status)
-                .Include(a => a.PatientUser)
-                .Where(a => a.PatientUser!.UserName == doctorUName)
+                .Include(a => a.DoctorUser)
+                .Where(a => a.DoctorUser!.UserName == doctorUName)
                 .OrderBy(a => a.Time)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
