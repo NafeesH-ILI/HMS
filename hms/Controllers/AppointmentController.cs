@@ -24,7 +24,7 @@ namespace hms.Controllers
         private readonly IAppointmentService _apptService = apptService;
 
         [HttpGet]
-        [Authorize(Roles = Roles.Receptionist)]
+        [Authorize/*(Roles = Roles.Receptionist)*/]
         public async Task<ActionResult<IAsyncEnumerable<AppointmentDtoGet>>> GetAll(
             [FromQuery] int page = 1, [FromQuery] int page_size = 10, [FromQuery] string? status = null,
             [FromQuery] string? patient_uname = null, [FromQuery] string? doctor_uname = null)

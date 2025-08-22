@@ -35,10 +35,12 @@ namespace hms.Services
             if (!passReset.IsValid || passReset.Expiry >= DateTime.Now.AddMinutes(Consts.OtpValidityMinutes) ||
                 passReset.Otp != otp)
                 throw new ErrForbidden("Bad OTP");
-            await _passRepo.Invalidate(passReset);
             User user = await _users.FindByNameAsync(passReset.UName) ?? throw new ErrNotFound("User Not Found");
             string token = await _users.GeneratePasswordResetTokenAsync(user);
-            await _users.ResetPasswordAsync(user, token, password);
+            var res = await _users.ResetPasswordAsync(user, token, password);
+            if (!res.Succeeded)
+                throw new ErrBadReq("Password does not meet critera");
+            await _passRepo.Invalidate(passReset);
         }
     }
 }

@@ -10,10 +10,12 @@ namespace hms.Services
     public class DepartmentService(
         DbCtx ctx,
         IMapper mapper,
+        INameService namer,
         IDepartmentRepository deptRepo) : IDepartmentService
     {
         private readonly DbCtx _ctx = ctx;
         private readonly IMapper _mapper = mapper;
+        private readonly INameService _namer = namer;
         private readonly IDepartmentRepository _deptRepo = deptRepo;
 
         public async Task<int> Count()
@@ -38,6 +40,9 @@ namespace hms.Services
 
         public async Task<Department> Add(DepartmentDtoNew dept)
         {
+            if (dept.UName.Length < Consts.UNameMinLen)
+                throw new ErrBadReq($"Departmment UName cannot be less than {Consts.UNameMinLen} characters");
+            _namer.ValidateName(dept.Name);
             Department d = _mapper.Map<Department>(dept);
             await _deptRepo.Add(d);
             return d;
@@ -45,10 +50,9 @@ namespace hms.Services
 
         public async Task Update(string uname, DepartmentDtoPut dept)
         {
-            if (!await ExistsByUName(uname))
-                throw new ErrNotFound("Department Not Found");
-            Department d = _mapper.Map<Department>(dept);
-            d.UName = uname;
+            _namer.ValidateName(dept.Name);
+            Department? d = await GetByUName(uname) ?? throw new ErrNotFound("Department Not Found");
+            _mapper.Map(dept, d);
             await _deptRepo.Update(d);
         }
 

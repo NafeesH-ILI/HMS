@@ -10,14 +10,14 @@ namespace hms.Services
 {
     public class PatientService(
         IPatientRepository patientRepo,
-        IUNameService namer,
+        INameService namer,
         IUserService userService,
         UserManager<User> userManager,
         DbCtx ctx,
         IMapper mapper) : IPatientService
     {
         private readonly IPatientRepository _patientRepo = patientRepo;
-        private readonly IUNameService _namer = namer;
+        private readonly INameService _namer = namer;
         private readonly IUserService _userService = userService;
         private readonly UserManager<User> _users = userManager;
         private readonly DbCtx _ctx = ctx;
@@ -52,6 +52,7 @@ namespace hms.Services
 
         public async Task<Patient> Add(PatientDtoNew patientDto)
         {
+            _namer.ValidateName(patientDto.Name);
             Patient p = _mapper.Map<Patient>(patientDto);
             User user = new()
             {
@@ -80,6 +81,7 @@ namespace hms.Services
 
         public async Task Update(string id, PatientDtoPut patientDto)
         {
+            _namer.ValidateName(patientDto.Name);
             Patient p = await GetById(id);
             _mapper.Map(patientDto, p);
             await _patientRepo.Update(p);
@@ -87,6 +89,8 @@ namespace hms.Services
 
         public async Task Update(string id, PatientDtoPatch patientDto)
         {
+            if (patientDto.Name != null)
+                _namer.ValidateName(patientDto.Name);
             Patient p = await GetById(id);
             _mapper.Map(patientDto, p);
             await _patientRepo.Update(p);

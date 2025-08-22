@@ -75,6 +75,9 @@ namespace hms.Services
         {
             Doctor doctor = await _doctorService.GetByUName(dto.DoctorUName);
             Patient patient = await _patientService.GetByUName(dto.PatientUName);
+            dto.Time = new DateTime(dto.Time.Year, dto.Time.Month, dto.Time.Day,
+                                        dto.Time.Hour, dto.Time.Minute, dto.Time.Second,
+                                        DateTimeKind.Unspecified);
             if (dto.Time < DateTime.Now)
                 throw new ErrBadReq("Cannot schedule Appointment in the past");
             Appointment appt = new()

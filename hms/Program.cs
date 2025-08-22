@@ -55,7 +55,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
-builder.Services.AddScoped<IUNameService, UNameService>();
+builder.Services.AddScoped<INameService, NameService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPassResetService, PassResetService>();
 

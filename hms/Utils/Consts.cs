@@ -8,5 +8,7 @@
         public const int OtpCleanupMinutes = 2;
         public const int CookieValidityMinutes = 60;
         public const int WebSockKeepAliveMinutes = 2;
+
+        public const int UNameMinLen = 3;
     }
 }
