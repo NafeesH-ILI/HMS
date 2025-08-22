@@ -57,7 +57,7 @@ namespace hms.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task<UserDtoGet> Get(string uname)
         {
-            User user = await _users.FindByNameAsync(uname) ?? throw new ErrNotFound();
+            User user = await _users.FindByNameAsync(uname) ?? throw new ErrNotFound("User Not Found");
             UserDtoGet res = _mapper.Map<UserDtoGet>(user);
             if (user.Type == hms.Models.User.Types.Doctor)
             {

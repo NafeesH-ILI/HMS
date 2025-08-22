@@ -28,12 +28,12 @@ namespace hms.Services
         }
         public async Task<Patient> GetByUName(string uname)
         {
-            return await _patientRepo.GetByUName(uname) ?? throw new ErrNotFound();
+            return await _patientRepo.GetByUName(uname) ?? throw new ErrNotFound("Patient Not Found");
         }
 
         public async Task<Patient> GetById(string id)
         {
-            return await _patientRepo.GetById(id) ?? throw new ErrNotFound();
+            return await _patientRepo.GetById(id) ?? throw new ErrNotFound("Patient Not Found");
         }
 
         public async Task<bool> ExistsByUName(string uname)
@@ -94,7 +94,8 @@ namespace hms.Services
 
         public async Task Delete(string id)
         {
-            await _patientRepo.Delete(await _patientRepo.GetById(id) ?? throw new ErrNotFound());
+            await _patientRepo.Delete(await _patientRepo.GetById(id) ??
+                throw new ErrNotFound("Patient Not Found"));
         }
 
         public PatientDtoGet ToDtoGet(Patient patient)

@@ -119,14 +119,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCustomExceptionHandler();
+
 // redirects requests coming on http:// to https:// using the PermantlyMoved response code
 app.UseHttpsRedirection();
 
 // authorization middleware. we not using it right now, so does not matter
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseCustomExceptionHandler(); // TODO: move this above
 
 // Maps controllers to the routes defined using [Route] and [HttpGet/Post/Etc]
 // If not done, swagger sees the endpoints, but they are not exposed. All return 404

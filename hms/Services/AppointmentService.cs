@@ -23,7 +23,7 @@ namespace hms.Services
 
         public async Task<Appointment> GetById(string id)
         {
-            return await _appts.GetById(Guid.Parse(id)) ?? throw new ErrNotFound();
+            return await _appts.GetById(Guid.Parse(id)) ?? throw new ErrNotFound("Appointment Not Found");
         }
 
         public async Task<int> Count(Appointment.Statuses? status = null)
@@ -73,10 +73,8 @@ namespace hms.Services
 
         public async Task<Appointment> Add(AppointmentDtoNew dto)
         {
-            Doctor doctor = await _doctorService.GetByUName(dto.DoctorUName) ??
-                throw new ErrNotFound($"Doctor `{dto.DoctorUName}` does not exist");
-            Patient patient = await _patientService.GetByUName(dto.PatientUName) ??
-                throw new ErrNotFound($"Doctor `{dto.PatientUName}` does not exist");
+            Doctor doctor = await _doctorService.GetByUName(dto.DoctorUName);
+            Patient patient = await _patientService.GetByUName(dto.PatientUName);
             if (dto.Time < DateTime.Now)
                 throw new ErrBadReq("Cannot schedule Appointment in the past");
             Appointment appt = new()
@@ -117,7 +115,7 @@ namespace hms.Services
 
         public async Task Delete(Guid Id)
         {
-            await _appts.Delete(await _appts.GetById(Id) ?? throw new ErrNotFound());
+            await _appts.Delete(await _appts.GetById(Id) ?? throw new ErrNotFound("Appointment Not Found"));
         }
 
         public AppointmentDtoGet ToDto(Appointment appt)

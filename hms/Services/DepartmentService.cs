@@ -23,7 +23,7 @@ namespace hms.Services
 
         public async Task<Department> GetByUName(string uname)
         {
-            return await _deptRepo.GetByUName(uname) ?? throw new ErrNotFound();
+            return await _deptRepo.GetByUName(uname) ?? throw new ErrNotFound("Department Not Found");
         }
 
         public async Task<bool> ExistsByUName(string uname)
@@ -46,7 +46,7 @@ namespace hms.Services
         public async Task Update(string uname, DepartmentDtoPut dept)
         {
             if (!await ExistsByUName(uname))
-                throw new ErrNotFound();
+                throw new ErrNotFound("Department Not Found");
             Department d = _mapper.Map<Department>(dept);
             d.UName = uname;
             await _deptRepo.Update(d);
@@ -54,7 +54,7 @@ namespace hms.Services
 
         public async Task Delete(string uname)
         {
-            await _deptRepo.Delete(await GetByUName(uname) ?? throw new ErrNotFound());
+            await _deptRepo.Delete(await GetByUName(uname) ?? throw new ErrNotFound("Department Not Found"));
         }
     }
 }
