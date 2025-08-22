@@ -101,9 +101,17 @@ builder.Services
         }*/
     });
 
+builder.Services.AddHostedService<OtpCleanupService>();
+
 // finally build as WebApplication from this WebApplicationBuilder
 // this is where thhose appsettings.json etc get read
 var app = builder.Build();
+
+/*using (var scope = app.Services.CreateScope())
+{
+    DbCtx ctx = scope.ServiceProvider.GetRequiredService<DbCtx>();
+    ctx.Database.Migrate();
+}*/
 
 app.UseWebSockets(new WebSocketOptions
 {

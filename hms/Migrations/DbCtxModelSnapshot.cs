@@ -210,8 +210,12 @@ namespace hms.Migrations
                         .HasColumnType("text")
                         .HasColumnName("patient_id");
 
-                    b.Property<TimeOnly>("Time")
-                        .HasColumnType("time without time zone")
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("time");
 
                     b.HasKey("Id");

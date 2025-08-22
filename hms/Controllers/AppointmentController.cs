@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using hms.Migrations;
 using hms.Models;
 using hms.Models.DTOs;
 using hms.Services.Interfaces;
