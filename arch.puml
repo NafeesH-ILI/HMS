@@ -1,0 +1,75 @@
+@startuml
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+allowmixing
+
+interface "HTTP"
+database "postgres"
+
+"HTTP" <--> "hms.Controllers"
+
+package "hms" {
+	package "Controllers"{
+		class AppointmentsController{}
+		class AuthController{}
+		class DepartmsntsController{}
+		class DoctorsController{}
+		class EchoWebSockController{}
+		class PatientsController{}
+		class UsersController{}
+	}
+
+	package "Models"{
+	}
+
+	package "Services"{
+		package "Interfaces"{
+			interface IAppointmentService{}
+			interface IDepartmentService{}
+			interface IDoctorService{}
+			interface INameService{}
+			interface IPassResetService{}
+			interface IPatientService{}
+			interface IUserService{}
+		}
+		class AppointmentService implements Interfaces.IAppointmentService{}
+		class DepartmentService implements Interfaces.IDepartmentService{}
+		class DoctorService implements Interfaces.IDoctorService{}
+		class NameService implements Interfaces.INameService{}
+		class PassResetService implements Interfaces.IPassResetService{}
+		class PatientService implements Interfaces.IPatientService{}
+		class UserService implements Interfaces.IUserService{}
+	}
+
+	package "Utils"{
+		class Consts{}
+		class DbCtx{}
+		class Errors{}
+		class Pagination{}
+		class Permissions{}
+		class RandomPass{}
+		class Roles{}
+	}
+
+	package "Repos" {
+		package "Interfaces" {
+			interface IAppointmentRepository{}
+			interface IDepartmentRepository{}
+			interface IDoctorRepository{}
+			interface IPassResetRepository{}
+			interface IPatientRepository{}
+		}
+		class AppointmentRepository implements Interfaces.IAppointmentRepository{}
+		class DepartmentRepository implements Interfaces.IDepartmentRepository{}
+		class DoctorRepository implements Interfaces.IDoctorRepository{}
+		class PassResetRepository implements Interfaces.IPassResetRepository{}
+		class PatientRepository implements Interfaces.IPatientRepository{}
+	}
+
+	"Controllers" --> "Services.Interfaces"
+	"Services" --> "Repos.Interfaces"
+	"Repos" *-- "Models"
+	"Repos" --- "postgres"
+}
+
+@enduml
