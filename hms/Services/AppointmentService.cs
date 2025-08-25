@@ -144,6 +144,11 @@ namespace hms.Services
                 dto.PatientUName = appt.PatientUser.UserName!;
             return dto;
         }
+
+        public async Task AutoCancel()
+        {
+
+        }
     }
 }
 

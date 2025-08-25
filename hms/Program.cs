@@ -95,6 +95,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddAuthorization(options => {});
 
 builder.Services.AddHostedService<OtpCleanupService>();
+builder.Services.AddHostedService<AppointmentAutoCancellationService>();
 
 // finally build as WebApplication from this WebApplicationBuilder
 // this is where thhose appsettings.json etc get read

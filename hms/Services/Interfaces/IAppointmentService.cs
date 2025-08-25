@@ -33,5 +33,7 @@ namespace hms.Services.Interfaces
         public Task Delete(Guid Id);
 
         public AppointmentDtoGet ToDto(Appointment appt);
+
+        public Task AutoCancel();
     }
 }
