@@ -6,6 +6,7 @@ using hms.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Xml;
 
 namespace hms.Controllers
 {
@@ -24,7 +25,7 @@ namespace hms.Controllers
         private readonly IAppointmentService _apptService = apptService;
 
         [HttpGet]
-        [Authorize/*(Roles = Roles.Receptionist)*/]
+        [Authorize]
         public async Task<ActionResult<IAsyncEnumerable<AppointmentDtoGet>>> GetAll(
             [FromQuery] int page = 1, [FromQuery] int page_size = 10, [FromQuery] string? status = null,
             [FromQuery] string? patient_uname = null, [FromQuery] string? doctor_uname = null)
@@ -32,6 +33,19 @@ namespace hms.Controllers
             int count;
             Appointment.Statuses? st = status == null ? null : _mapper.Map<TypeT<Appointment.Statuses>>(
                                     new TypeTString<Appointment.Statuses> { Type = status }).Type;
+            hms.Models.User user = await _users.GetUserAsync(User) ?? throw new ErrForbidden();
+
+            if (user.Type == hms.Models.User.Types.Patient)
+            {
+                if (string.IsNullOrEmpty(patient_uname) || patient_uname != user.UserName)
+                    throw new ErrForbidden("You can only view your own appointments");
+            }
+            else if (user.Type == hms.Models.User.Types.Doctor)
+            {
+                if (string.IsNullOrEmpty(doctor_uname) || doctor_uname != user.UserName)
+                    throw new ErrForbidden("You can only view your own appointments");
+            }
+
             if (patient_uname != null && doctor_uname != null)
             {
                 count = await _apptService.CountByDoctorPatient(doctor_uname, patient_uname, st);
@@ -166,7 +180,7 @@ namespace hms.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.SuperAdmin)]
         public async Task Delete(string id)
         {
             await _apptService.Delete(Guid.Parse(id));

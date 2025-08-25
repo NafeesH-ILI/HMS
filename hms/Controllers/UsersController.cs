@@ -79,7 +79,7 @@ namespace hms.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.SuperAdmin)]
         public async Task<ActionResult<UserDtoGet>> Post([FromBody] UserDtoNew dto)
         {
             hms.Models.User.Types uType = _mapper.Map<TypeT<User.Types>>(

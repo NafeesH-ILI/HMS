@@ -67,7 +67,7 @@ namespace hms.Controllers
         }
 
         [HttpDelete("{uname}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.SuperAdmin)]
         public async Task<ActionResult> Delete(string uname)
         {
             await _deptService.Delete(uname);
