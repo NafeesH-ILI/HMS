@@ -92,26 +92,20 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-builder.Services
-    .AddAuthorization(options =>
-    {
-        /*foreach (User.Types role in Enum.GetValues<User.Types>())
-        {
-                options.AddPolicy(role.ToString(), policy => policy.RequireRole(role.ToString()));
-        }*/
-    });
+builder.Services.AddAuthorization(options => {});
 
 builder.Services.AddHostedService<OtpCleanupService>();
+builder.Services.AddHostedService<AppointmentAutoCancellationService>();
 
 // finally build as WebApplication from this WebApplicationBuilder
 // this is where thhose appsettings.json etc get read
 var app = builder.Build();
 
-/*using (var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
     DbCtx ctx = scope.ServiceProvider.GetRequiredService<DbCtx>();
     ctx.Database.Migrate();
-}*/
+}
 
 app.UseWebSockets(new WebSocketOptions
 {

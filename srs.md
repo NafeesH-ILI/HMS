@@ -108,3 +108,7 @@ The system shall make use of 3 interfaces:
 - REST API over HTTP(s) protocol
 - PostgreSQL via Npgsql
 - Stdout/Stderr for logging system information
+
+---
+
+![Architecture](arch-rotated.png)

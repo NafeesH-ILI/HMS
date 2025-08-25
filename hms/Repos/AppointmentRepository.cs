@@ -121,5 +121,15 @@ namespace hms.Repos
             _ctx.Appointments.Remove(appt);
             await _ctx.SaveChangesAsync();
         }
+
+        public async Task AutoCancel(DateTime threshold)
+        {
+            var selected = _ctx.Appointments
+                .Where(a => a.Time <= threshold)
+                .Where(a => a.Status == Appointment.Statuses.Scheduled); 
+            foreach (var appt in selected)
+                appt.Status = Appointment.Statuses.Cancelled;
+            await _ctx.SaveChangesAsync();
+        }
     }
 }

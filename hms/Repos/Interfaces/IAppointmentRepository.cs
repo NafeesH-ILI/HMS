@@ -22,5 +22,6 @@ namespace hms.Repos.Interfaces
         public Task Add(Appointment appt);
         public Task Update(Appointment appt);
         public Task Delete(Appointment appt);
+        public Task AutoCancel(DateTime threshold);
     }
 }
