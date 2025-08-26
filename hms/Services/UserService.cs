@@ -24,12 +24,17 @@ namespace hms.Services
 
         public int Count()
         {
-            return _users.Users.Count();
+            return _users.Users
+                .Where(u => u.IsActive)
+                .Count();
         }
 
         public int Count(User.Types type)
         {
-            return _users.Users.Where(u => u.Type == type).Count();
+            return _users.Users
+                .Where(u => u.IsActive)
+                .Where(u => u.Type == type)
+                .Count();
         }
 
         public IList<User> Get(int page = 1, int pageSize = 10)
@@ -37,6 +42,7 @@ namespace hms.Services
             if (page <= 0 || pageSize <= 0 || pageSize > 50)
                 throw new ErrBadPagination();
             return _users.Users
+                .Where(u => u.IsActive)
                 .OrderBy(u => u.UserName)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -48,6 +54,7 @@ namespace hms.Services
             if (page <= 0 || pageSize <= 0 || pageSize > 50)
                 throw new ErrBadPagination();
             return _users.Users
+                .Where(u => u.IsActive)
                 .Where(u => u.Type == type)
                 .OrderBy(u => u.UserName)
                 .Skip((page - 1) * pageSize)
@@ -107,6 +114,13 @@ namespace hms.Services
         public async Task PasswordReset(PasswordResetDto dto)
         {
             await _passService.Reset(Guid.Parse(dto.SessionId), dto.Otp, dto.Password);
+        }
+
+        public async Task SetActive(string uname, bool isActive)
+        {
+            User user = await _users.FindByNameAsync(uname) ?? throw new ErrNotFound("User Not Found");
+            user.IsActive = isActive;
+            await _ctx.SaveChangesAsync();
         }
     }
 }
