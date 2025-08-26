@@ -7,6 +7,7 @@
         public const double OtpValidityMinutes = 2;
         public const int OtpCleanupMinutes = 2;
         public const int ApptAutoCancelMinutes = 30;
+        public const int ApptAutoCancelWindowMinutes = 6 * 60; // 6 hours
         public const int CookieValidityMinutes = 60;
         public const int WebSockKeepAliveMinutes = 2;
 
