@@ -57,7 +57,8 @@ namespace hms.Services
             User user = new()
             {
                 UserName = _namer.Generate(patientDto.Name),
-                Type = User.Types.Patient
+                Type = User.Types.Patient,
+                IsActive = true
             };
             if (!(await _users.CreateAsync(user,
                         patientDto.Password ?? RandomPass.Password())).Succeeded)

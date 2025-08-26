@@ -76,7 +76,8 @@ namespace hms.Services
             User user = new()
             {
                 UserName = _namer.Generate(dto.Name),
-                Type = uType
+                Type = uType,
+                IsActive = true
             };
             var res = await _users.CreateAsync(user, dto.Password);
             if (!res.Succeeded)

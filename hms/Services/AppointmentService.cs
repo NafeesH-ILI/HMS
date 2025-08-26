@@ -147,7 +147,7 @@ namespace hms.Services
 
         public async Task AutoCancel()
         {
-
+            await _appts.AutoCancel(DateTime.Now.AddMinutes(-Consts.ApptAutoCancelMinutes));
         }
     }
 }
