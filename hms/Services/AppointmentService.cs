@@ -106,9 +106,10 @@ namespace hms.Services
             }
             if (dto.Time != null)
             {
-                if (dto.Time < DateTime.Now)
+                DateTime t = ((DateTime)dto.Time).ToUniversalTime();
+                if (t < DateTime.Now)
                     throw new ErrBadReq("Cannot schedule Appointment in the past");
-                appt.Time = (DateTime)dto.Time;
+                appt.Time = t;
             }
             await _appts.Update(appt);
             return appt;
