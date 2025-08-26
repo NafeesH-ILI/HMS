@@ -117,7 +117,9 @@ namespace hms.Controllers
         {
             User user = await _users.GetUserAsync(User) ?? throw new ErrForbidden();
             Appointment appt = await _apptService.GetById(id);
-            if (user.Type != hms.Models.User.Types.Receptionist)
+            if (user.Type != hms.Models.User.Types.Receptionist &&
+                user.Type != hms.Models.User.Types.Admin &&
+                user.Type != hms.Models.User.Types.SuperAdmin)
             {
                 if (user.Id != appt.DoctorId && user.Id != appt.PatientId)
                     throw new ErrNotLegal();
@@ -156,7 +158,7 @@ namespace hms.Controllers
                     user.Type != hms.Models.User.Types.SuperAdmin))
                     throw new ErrForbidden("You cannot mark appointment as done");
 
-                // only doctor/patient/receptionist can cancel
+                // only relevant doctor/patient allowed
                 if (status == Appointment.Statuses.Cancelled)
                 {
                     if (user.Type == hms.Models.User.Types.Doctor)
@@ -169,10 +171,6 @@ namespace hms.Controllers
                         if (appt.PatientId != user.Id)
                             throw new ErrForbidden("You cannot change this appointment's status");
                     }
-                    else if (user.Type != hms.Models.User.Types.Receptionist &&
-                        user.Type != hms.Models.User.Types.Admin &&
-                        user.Type != hms.Models.User.Types.SuperAdmin)
-                        throw new ErrForbidden("You cannot change this appointment's status");
                 }
             }
             appt = await _apptService.Update(Guid.Parse(id), dto);
