@@ -14,5 +14,6 @@ namespace hms.Services.Interfaces
         public Task PasswordChange(string uname, string password);
         public Task<PassResetOtp> PasswordReset(string uname);
         public Task PasswordReset(PasswordResetDto dto);
+        public Task SetActive(string uname, bool isActive);
     }
 }

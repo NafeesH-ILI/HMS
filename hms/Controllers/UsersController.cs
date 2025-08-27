@@ -79,7 +79,7 @@ namespace hms.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = Roles.SuperAdmin)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<UserDtoGet>> Post([FromBody] UserDtoNew dto)
         {
             hms.Models.User.Types uType = _mapper.Map<TypeT<User.Types>>(
@@ -94,6 +94,21 @@ namespace hms.Controllers
             User user = await _userService.Add(dto);
             UserDtoGet res = _mapper.Map<UserDtoGet>(user);
             return CreatedAtRoute("GetByUName", new { uname = user.UserName }, res);
+        }
+
+        [HttpDelete("{uname}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> Delete(string uname)
+        {
+            User subject = await _users.FindByNameAsync(uname) ?? throw new ErrNotFound("User Not Found");
+            User actor = await _users.GetUserAsync(User) ?? throw new ErrForbidden();
+            if (subject.Type == hms.Models.User.Types.SuperAdmin &&
+                actor.Type == hms.Models.User.Types.Admin)
+                throw new ErrForbidden("You cannot delete a SuperAdmin");
+            if (actor.UserName == subject.UserName)
+                throw new ErrBadReq("You cannot delete yourself");
+            await _userService.SetActive(uname, false);
+            return Ok();
         }
     }
 }

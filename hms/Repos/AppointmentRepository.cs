@@ -124,6 +124,7 @@ namespace hms.Repos
 
         public async Task AutoCancel(DateTime threshold)
         {
+            threshold = threshold.ToUniversalTime();
             var selected = _ctx.Appointments
                 .Where(a => a.Time <= threshold)
                 .Where(a => a.Status == Appointment.Statuses.Scheduled); 

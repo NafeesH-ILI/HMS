@@ -34,7 +34,8 @@ namespace hms.Utils
                 Type = User.Types.SuperAdmin,
                 SecurityStamp = "f613a119-e134-428c-8dec-98bf5c82ea2e",
                 ConcurrencyStamp = "f613a119-e134-428c-8dec-98bf5c82ea2a",
-                PasswordHash = "AQAAAAIAAYagAAAAEOVIKgI78Fd2jA/QBnJM/7uFMuPgl2jrht/8Z7hVY7kJU37/hOW3V6PIP2AihhitBg=="
+                PasswordHash = "AQAAAAIAAYagAAAAEOVIKgI78Fd2jA/QBnJM/7uFMuPgl2jrht/8Z7hVY7kJU37/hOW3V6PIP2AihhitBg==",
+                IsActive = true
             });
             modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
             {

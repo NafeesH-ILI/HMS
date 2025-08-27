@@ -75,10 +75,8 @@ namespace hms.Services
         {
             Doctor doctor = await _doctorService.GetByUName(dto.DoctorUName);
             Patient patient = await _patientService.GetByUName(dto.PatientUName);
-            dto.Time = new DateTime(dto.Time.Year, dto.Time.Month, dto.Time.Day,
-                                        dto.Time.Hour, dto.Time.Minute, dto.Time.Second,
-                                        DateTimeKind.Unspecified);
-            if (dto.Time < DateTime.Now)
+            dto.Time = dto.Time.ToUniversalTime();
+            if (dto.Time < DateTime.Now.ToUniversalTime())
                 throw new ErrBadReq("Cannot schedule Appointment in the past");
             Appointment appt = new()
             {
@@ -108,9 +106,10 @@ namespace hms.Services
             }
             if (dto.Time != null)
             {
-                if (dto.Time < DateTime.Now)
+                DateTime t = ((DateTime)dto.Time).ToUniversalTime();
+                if (t < DateTime.Now)
                     throw new ErrBadReq("Cannot schedule Appointment in the past");
-                appt.Time = (DateTime)dto.Time;
+                appt.Time = t;
             }
             await _appts.Update(appt);
             return appt;
@@ -147,7 +146,7 @@ namespace hms.Services
 
         public async Task AutoCancel()
         {
-
+            await _appts.AutoCancel(DateTime.Now.AddMinutes(-Consts.ApptAutoCancelWindowMinutes));
         }
     }
 }
