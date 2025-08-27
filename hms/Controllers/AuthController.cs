@@ -32,8 +32,13 @@ namespace hms.Controllers
                     auth.Password, false, false);
             if (!res.Succeeded)
             {
-                _logger.LogError(res.ToString());
                 return Unauthorized("bad credentials");
+            }
+            User user = await _users.GetUserAsync(User) ?? throw new ErrUnauthorized();
+            if (!user.IsActive)
+            {
+                await _signInManager.SignOutAsync();
+                throw new ErrForbidden("User Account Deactivated");
             }
             return Ok();
         }
