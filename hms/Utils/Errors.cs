@@ -82,4 +82,6 @@ namespace hms.Utils
         msg ?? "Forbidden") { }
     public class ErrNotLegal(string? msg = null) : CustomException(
         StatusCodes.Status451UnavailableForLegalReasons, msg ?? "Not Available for Legal Reason") { }
+    public class ErrUnavailable(string? msg = null) : CustomException(
+        StatusCodes.Status503ServiceUnavailable, msg ?? "Service Temporarily Unavailable");
 }

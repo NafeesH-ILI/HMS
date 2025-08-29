@@ -10,6 +10,7 @@
         public const int ApptAutoCancelWindowMinutes = 6 * 60; // 6 hours
         public const int CookieValidityMinutes = 60;
         public const int WebSockKeepAliveMinutes = 2;
+        public const int TokenGenAttemptsMax = 10;
 
         public const int UNameMinLen = 3;
     }

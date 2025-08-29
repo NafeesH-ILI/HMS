@@ -12,7 +12,7 @@ namespace hms.Services
         private readonly ILogger<OtpCleanupService> _logger = logger;
         private readonly IServiceProvider _services = services;
         private System.Timers.Timer? _timer = null;
-        private static object _lock = new object();
+        private static object _lock = new();
         private static bool _isRunning = false;
 
         private async Task Fire()
